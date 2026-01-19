@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>5A 英语通关大本营 - luka版权所有</title>
+<style>
+  :root { --main: #673ab7; --bg: #f5f6fa; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+  
+  /* 顶部横幅 */
+  header { background: var(--main); color: #fff; width: 100%; padding: 30px 0; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+  header h1 { margin: 0; font-size: 1.8rem; letter-spacing: 2px; }
+  header p { margin: 10px 0 0; opacity: 0.9; font-size: 1rem; }
+
+  /* 入口网格 */
+  .container { width: 92%; max-width: 600px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 30px; padding-bottom: 50px; }
+  
+  .portal-card { background: #fff; border-radius: 24px; padding: 30px 15px; text-align: center; text-decoration: none; box-shadow: 0 8px 20px rgba(0,0,0,0.05); transition: all 0.3s ease; display: flex; flex-direction: column; align-items: center; border: 2px solid transparent; }
+  
+  /* 激活效果 */
+  .portal-card:active { transform: scale(0.95); background: #fdfbff; }
+  .portal-card:hover { border-color: var(--main); transform: translateY(-5px); }
+
+  .icon { font-size: 3.5rem; margin-bottom: 15px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1)); }
+  .title { font-size: 1.2rem; font-weight: bold; color: #333; margin-bottom: 8px; }
+  .desc { font-size: 0.8rem; color: #888; line-height: 1.4; padding: 0 10px; }
+
+  /* 底部版权栏 */
+  footer { margin-top: auto; width: 100%; padding: 25px 0; background: #fff; border-top: 1px solid #eee; text-align: center; color: #b0bec5; font-size: 0.85rem; font-weight: bold; line-height: 1.6; }
+  .luka-tag { color: var(--main); }
+
+  /* 手机窄屏适配 */
+  @media (max-width: 380px) {
+    .container { grid-template-columns: 1fr; }
+    header h1 { font-size: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>5A 英语通关大本营</h1>
+  <p>🚀 1月23日考试冲刺 · 练就全能王者</p >
+</header>
+
+<div class="container">
+  <a href="base.html" class="portal-card">
+    <div class="icon">📚</div>
+    <div class="title">基础知识</div>
+    <div class="desc">单词短语 · 核心句型<br>全量地毯式复习</div>
+  </a >
+
+  <a href="grammar.html" class="portal-card">
+    <div class="icon">⚖️</div>
+    <div class="title">语法特训</div>
+    <div class="desc">考点攻坚 · 逻辑训练<br>举一反三不丢分</div>
+  </a >
+
+  <a href="spelling.html" class="portal-card">
+    <div class="icon">✍️</div>
+    <div class="title">单词拼写</div>
+    <div class="desc">字母填空 · 记忆强化<br>告别考场笔误</div>
+  </a >
+
+  <a href="listening.html" class="portal-card">
+    <div class="icon">🎧</div>
+    <div class="title">听力巅峰</div>
+    <div class="desc">辨音识词 · 盲听对话<br>磨耳朵提分神器</div>
+  </a >
+</div>
+
+<footer>
+  <div>Copyright © <span class="luka-tag">luka</span> 版权所有</div>
+  <div style="font-size: 0.7rem; margin-top: 5px; opacity: 0.7;">坚持练习，你就是最棒的 5A 学子！</div>
+</footer>
+
+</body>
+</html>

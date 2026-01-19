@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>5A英语：语法特训 - 版权归luka所有</title>
+    <style>
+        :root { --primary: #9c27b0; --secondary: #673ab7; --warning: #ff9800; --danger: #f44336; --bg: #f3e5f5; }
+        body { font-family: sans-serif; background: var(--bg); margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding-bottom: 80px; }
+        .health-bar { background: #fffde7; color: #856404; width: 100%; text-align: center; padding: 8px 0; font-size: 0.75rem; border-bottom: 1px solid #ffeeba; font-weight: bold; position: sticky; top:0; z-index: 1001; }
+        header { background: var(--primary); color: white; width: 100%; text-align: center; padding: 12px 0; font-weight: bold; position: sticky; top:33px; z-index: 1000; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .progress-box { width: 94%; background: #fff; padding: 15px; border-radius: 15px; margin: 10px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.05); text-align: center; box-sizing: border-box;}
+        .p-bar-bg { width: 100%; background: #eee; height: 12px; border-radius: 6px; overflow: hidden; margin: 8px 0; }
+        .p-fill { height: 100%; width: 0%; transition: width 0.5s; background: linear-gradient(90deg, #9c27b0, #ba68c8); }
+        #menu-screen { padding: 10px; width: 100%; max-width: 600px; box-sizing: border-box; }
+        .category-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .cat-btn { background: white; border: 1px solid #e1bee7; border-radius: 15px; padding: 15px; cursor: pointer; display: flex; flex-direction: column; align-items: center; position: relative; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: 0.2s; }
+        .cat-btn:active { transform: scale(0.95); }
+        .cat-name { font-weight: bold; font-size: 0.9rem; color: #4a148c; margin-bottom: 4px; }
+        .cat-info { font-size: 0.65rem; color: #7b1fa2; }
+        #game-screen { display: none; width: 100%; flex-direction: column; align-items: center; }
+        .info-bar { background: white; width: 100%; padding: 10px; display: flex; justify-content: space-around; font-size: 0.85rem; border-bottom: 1px solid #e1bee7; width:100%; position:sticky; top:75px; z-index: 900; }
+        .question-card { background: #fff; border: 2px solid #ce93d8; border-radius: 15px; padding: 20px; min-height: 100px; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 1.1rem; font-weight: bold; color: #4a148c; width: 90%; max-width: 600px; margin-top: 15px; line-height: 1.5; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .choice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 90%; max-width: 600px; padding: 15px 0; }
+        .option-card { background: #fff; border: 2px solid #e2e8f0; border-radius: 12px; padding: 15px; cursor: pointer; text-align: left; font-size: 1rem; font-weight: bold; transition: 0.1s; display: flex; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.03); }
+        .option-card.correct { border-color: #4CAF50; background: #e8f5e9; color: #2e7d32; transform: scale(1.03); }
+        .option-card.wrong { border-color: #f44336; background: #ffebee; color: #c62828; animation: shake 0.3s; }
+        @keyframes shake { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-5px);} 75%{transform:translateX(5px);} }
+        #modal, #health-modal, #explain-modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 25px; border-radius: 24px; box-shadow: 0 20px 60px rgba(0,0,0,0.4); text-align: center; z-index: 3000; width: 85%; max-width: 350px; border: 1px solid #eee; }
+        .explain-box { text-align: left; background: #fffde7; padding: 15px; border-radius: 12px; font-size: 0.9rem; margin: 15px 0; line-height: 1.6; color: #856404; border: 1px solid #ffeeba; }
+        .btn-ui { background: var(--primary); color: white; border: none; padding: 14px; border-radius: 30px; cursor: pointer; margin-top: 10px; width: 100%; font-size: 1rem; font-weight: bold; }
+        
+        /* 底部版权栏样式 */
+        .copyright-tag { position: fixed; bottom: 0; width: 100%; text-align: center; padding: 10px 0; background: rgba(255,255,255,0.7); font-size: 0.7rem; color: #9c27b0; border-top: 1px solid #e1bee7; z-index: 2000; letter-spacing: 1px; }
+    </style>
+</head>
+<body>
+<div class="health-bar">🔔 坐姿挺直，保护视力。版权归luka所有。</div>
+<header>5A 英语：语法特训 V26.2</header>
+
+<div id="menu-screen">
+    <div class="progress-box">
+        <div style="font-size: 0.85rem; color: #6a1b9a; font-weight: bold;">语法总通关进度</div>
+        <div class="p-bar-bg"><div id="bar-grammar" class="p-fill"></div></div>
+        <b id="txt-grammar" style="color: #9c27b0;">载入中...</b>
+    </div>
+    <div class="category-grid" id="category-btns"></div>
+</div>
+
+<div id="game-screen">
+    <div class="info-bar"><span><b id="cur-cat-name"></b></span><span>⏱️ <b id="timer-val">0</b>s</span></div>
+    <div id="q-area" class="question-card"></div>
+    <div id="opt-area" class="choice-grid"></div>
+    <button class="btn-ui" style="background:#94a3b8; width:90%;" onclick="showMenu()">返回目录</button>
+</div>
+
+<div id="explain-modal">
+    <h3 style="color:var(--danger); margin:0;">❌ 选错了，看解析</h3>
+    <div id="explain-content" class="explain-box"></div>
+    <button class="btn-ui" onclick="closeExp()">我懂了，继续</button>
+</div>
+
+<div id="modal">
+    <h3 id="modal-title">🎊 挑战完成！</h3>
+    <div id="report-html" style="text-align:left; background:#f8fafc; padding:15px; border-radius:12px; margin:15px 0; font-size:0.9rem; color:#4a148c;"></div>
+    <div style="font-size: 0.6rem; color:#ccc; margin-bottom:10px;">开发者：luka</div>
+    <button class="btn-ui" onclick="initLevel()">下一组练习</button>
+    <button class="btn-ui" style="background:#94a3b8" onclick="showMenu()">返回主目录</button>
+</div>
+
+<div class="health-modal" id="health-modal"><h3>👀 保护视力</h3><div id="health-content" style="font-size:0.9rem; margin:15px 0;"></div><button class="btn-ui" onclick="closeH()">已远眺，继续</button></div>
+
+<div class="copyright-tag">Copyright © 版权归luka所有</div>
+
+<script>
+/**
+ * 5A英语语法特训系统
+ * 版权所有：luka
+ */
+
+// 167题 240题 数据块已保持原样载入
+const myDataString = `-What ________ your hobby, Janet? -I collect stamps.|am|is|are|be|B|hobby 是单数，be 动词用 is。|M1: 兴趣爱好
+$$$
+Jiamin ________ making model planes very much.|love|loves|loving|to love|B|主语 Jiamin 是单数，动词 love 需加 s。|M1: 兴趣爱好
+$$$
+I have more ________ 500 stamps from 20 countries.|many|much|than|most|C|more than 是固定短语，表示“多于”。|M1: 兴趣爱好
+$$$
+-What are you doing? -I ________ a model ship now.|make|makes|am making|making|C|now 提示用现在进行时 be+doing。|M1: 兴趣爱好
+$$$
+My hobby is ________ pets. I have two dogs and a cat.|keep|keeping|keeps|to keep|B|My hobby is 后面接动名词 -ing。|M1: 兴趣爱好
+$$$
+Janet ________ stamps from many different countries.|collect|collects|collecting|is collect|B|主语 Janet 是三单，动词用 collects。|M1: 兴趣爱好
+$$$
+Does your brother ________ playing computer games?|like|likes|liking|liked|A|助动词 does 后面动词要用原形。|M1: 兴趣爱好
+$$$
+There are about 50 ________ in my computer.|game|games|gaming|to game|B|50 后面用名词复数 games。|M1: 兴趣爱好
+$$$
+I often take photos ________ my holiday.|in|on|during|at|C|during my holiday 意为“在假期期间”。|M1: 兴趣爱好
+$$$
+Collecting stamps ________ fun and interesting.|am|is|are|be|B|动名词短语做主语，谓语动词用单数 is。|M1: 兴趣爱好
+$$$
+Mike is a great ________. He can draw very well.|paint|painting|painter|paints|C|表示职业“画家”用 painter。|M2: 技能挑战
+$$$
+His hobby ________ drawing cartoons.|am|is|are|be|B|hobby 是单数，be 动词用 is。|M2: 技能挑战
+$$$
+Sometimes Mike draws a bird ________ the sky.|in|on|at|to|A|“在天空中”固定搭配是 in the sky。|M2: 技能挑战
+$$$
+Amy ________ drawing interesting people and places.|like|likes|liking|is like|B|主语 Amy 是三单，动词用 likes。|M2: 技能挑战
+$$$
+You can ________ her drawings in every room.|see|sees|seeing|saw|A|情态动词 can 后面接动词原形。|M2: 技能挑战
+$$$
+When Amy grows up, she ________ to be a painter.|want|wants|wanting|wanted|B|主语 she 是三单，动词用 wants。|M2: 技能挑战
+$$$
+My father ________ some reading every night.|do|does|doing|is do|B|习惯动作且主语是 Father，动词用 does。|M2: 技能挑战
+$$$
+My sister enjoys ________ birthday cards for friends.|make|makes|making|is make|C|enjoy 后面固定接动词 -ing。|M2: 技能挑战
+$$$
+There ________ many model cars in Tom's big box.|am|is|are|be|C|cars 是复数，there be 动词用 are。|M2: 技能挑战
+$$$
+Lily loves ________ stamps from different countries.|collect|collects|collecting|to collect|C|love 后面表达爱好常用 -ing 形式。|M2: 技能挑战
+$$$
+I am very good at ________. It's my hobby.|draw|draws|drawing|to draw|C|be good at 后面固定接动词 -ing。|M2: 技能挑战
+$$$
+My brother can swim very ________.|fast|high|far|good|A|“游得快”用副词 fast。|M2: 技能挑战
+$$$
+-Can you jump ________? -Yes, I can.|far|high|well|fast|B|“跳得高”用副词 high。|M2: 技能挑战
+$$$
+Ben and Xiaoling ________ go swimming together.|can|are|do|is|A|表达能力“能”用 can。|M2: 技能挑战
+$$$
+Let's ________ swimming together this afternoon.|go|goes|going|to go|A|Let's 后面接动词原形。|M2: 技能挑战
+$$$
+My sister ________ sing very well.|am|is|can|are|C|表达“会唱歌”这种能力用 can。|M2: 技能挑战
+$$$
+I often draw cartoons ________ my cousin Amy.|and|with|or|for|B|with someone 意为“和某人在一起”。|M2: 技能挑战
+$$$
+The boy ________ jump very far.|can|is|does|are|A|表达能力用 can，且 can 后接原形。|M2: 技能挑战
+$$$
+She ________ very well, too.|draw|draws|drawing|is draw|B|主语 She 是三单，动词用 draws。|M2: 技能挑战
+$$$
+What's your ________, Mike? -I like swimming.|name|age|hobby|job|C|“喜欢游泳”属于 hobby（爱好）。|M2: 技能挑战
+$$$
+________ he is at the swimming pool.|But|Maybe|And|Can|B|Maybe 意为“也许”，常放在句首。|M3: 日常生活
+$$$
+Ms White wants to talk ________ Ben.|with|for|in|on|A|talk with someone 意为“和某人交谈”。|M3: 日常生活
+$$$
+I can't ________ my pen. Where is it?|look for|find|look at|look|B|find 强调找的结果“找到”，look for 强调过程。|M3: 日常生活
+$$$
+Ben never goes swimming ________ weekdays.|in|at|on|for|C|“在工作日”固定搭配用 on weekdays。|M3: 日常生活
+$$$
+-Where is Ben? -He is in the ________.|gym|home|market|house|A|gym 意为“体育馆”。|M3: 日常生活
+$$$
+I often ________ football after school.|play|plays|playing|am play|A|主语是 I，动词用原形。|M3: 日常生活
+$$$
+Let me go and ________ him in the playground.|look for|find|find out|look at|A|look for 意为“寻找”，强调找的过程。|M3: 日常生活
+$$$
+Sometimes he ________ books at the library.|read|reads|reading|is read|B|主语 he 是三单，动词用 reads。|M3: 日常生活
+$$$
+I usually wake up ________ on weekdays.|early|busy|late|fast|A|early 意为“早地”。|M3: 日常生活
+$$$
+My brother is ________ his shoes now.|find|finding|looking for|look for|C|be+looking for 意为“正在寻找”。|M3: 日常生活
+$$$
+The Chen family ________ always very busy at the weekend.|am|is|are|be|B|family作为一个整体看作单数，be动词用is。|M3: 日常生活
+$$$
+Jiamin ________ goes to the cinema. He doesn't like it.|always|usually|seldom|often|C|seldom意为“很少/不常”。|M3: 日常生活
+$$$
+After breakfast, Mrs Chen usually ________ to the market.|go|goes|going|is go|B|主语Mrs Chen是三单，动作go要加es。|M3: 日常生活
+$$$
+Does Ben ________ have a swimming lesson on Saturday?|often|never|always|usually|A|疑问句Does后接动词原形，often表频度。|M3: 日常生活
+$$$
+He likes ________ at home and watching TV.|stay|stays|staying|is stay|C|like doing sth. 表示习惯性的喜欢。|M3: 日常生活
+$$$
+They always wake up very ________ on Sundays.|early|late|fast|busy|A|early意为“早地”，常用于描述起床时间。|M3: 日常生活
+$$$
+My father ________ computer games in the afternoon.|play|plays|playing|is play|B|三单主语My father，play加s。|M3: 日常生活
+$$$
+We usually visit our grandparents ________ Sunday morning.|in|at|on|for|C|在具体的某一天上午，介词用on。|M3: 日常生活
+$$$
+-How is your weekend? -It ________ very busy but fun.|am|is|are|be|B|主语It是单数，be动词用is。|M3: 日常生活
+$$$
+Maybe he ________ books at the library now.|read|reads|is reading|reading|C|now提示正在进行时be+doing。|M3: 日常生活
+$$$
+Look! The boy ________ in the swimming pool.|swim|swims|is swimming|swimming|C|Look!提示正在进行时，swim要双写m。|M4: 饮食味道
+$$$
+Listen! Xiaoling ________ in the music room.|sing|sings|is singing|singing|C|Listen!提示正在进行时，用be+doing。|M4: 饮食味道
+$$$
+What ________ your mother doing in the kitchen?|am|is|are|be|B|主语Mother是单数，用is。|M4: 饮食味道
+$$$
+Jiamin is ________ a model plane for his father now.|make|makes|making|to make|C|make要去掉e再加ing。|M4: 饮食味道
+$$$
+I am ________ some reading during my holiday.|do|does|doing|did|C|am后面接doing构成正在进行时。|M4: 饮食味道
+$$$
+Are you ________ for your shoes? Yes, I am.|look|looks|looking|looked|C|looking for表示“正在寻找”。|M4: 饮食味道
+$$$
+The girls ________ dancing in the gym now.|am|is|are|be|C|主语The girls是复数，be动词用are。|M4: 饮食味道
+$$$
+My sister ________ every morning.|dance|dances|is dancing|dancing|B|every morning提示是一般现在时，主语单数加s。|M4: 饮食味道
+$$$
+They ________ basketball on the playground now.|play|plays|are playing|playing|C|复数主语用are playing。|M4: 饮食味道
+$$$
+-What are they doing? -They ________ photos.|take|taking|are taking|is taking|C|问句是进行时，答句也要用be+doing。|M4: 饮食味道
+$$$
+What ________ we have for dinner tonight?|can|should|do|are|B|should表示征求意见或建议。|M4: 饮食味道
+$$$
+We ________ eat more vegetables to stay healthy.|should|shouldn't|can't|don't|A|应该多吃蔬菜，用should。|M4: 饮食味道
+$$$
+My English friends ________ eating sandwiches.|enjoy|enjoys|enjoying|are enjoy|A|enjoy doing sth. 表示享受做某事。|M4: 饮食味道
+$$$
+I hope everyone ________ my chocolate cake.|like|likes|liking|is like|B|everyone作主语看作单数，动词加s。|M4: 饮食味道
+$$$
+Let's start ________ now. I'm hungry!|cook|cooks|cooking|to cooking|C|start doing sth. 表示开始做某事。|M4: 饮食味道
+$$$
+For the main course, we can have fish and ________.|potato|potatoes|potatos|potating|B|土豆复数是加es。|M4: 饮食味道
+$$$
+There are two ________ of bread on the table.|box|boxes|boxs|boxing|B|box复数是加es。|M4: 饮食味道
+$$$
+We ________ eat too much candy. It's not healthy.|can|should|shouldn't|can't to|C|表达不应该，用shouldn't。|M4: 饮食味道
+$$$
+I want to have two ________ for breakfast.|sandwich|sandwichs|sandwiches|sandwiching|C|三明治复数是加es。|M4: 饮食味道
+$$$
+My mother has some ________ every morning.|bread|breads|breading|a bread|A|面包bread是不可数名词。|M4: 饮食味道
+$$$
+It's time ________ lunch. Let's go!|to|for|in|on|B|It's time for + 名词，意为“是……的时候了”。|M4: 饮食味道
+$$$
+Everything ________ great here. I like the food.|look|looks|looking|are look|B|everything作主语看作单词，动词加s。|M5: 味道感官
+$$$
+I'll try the chicken first. It ________ delicious.|smell|smells|smelling|is smell|B|主语是It，smell加s。|M5: 味道感官
+$$$
+What do you ________ of the fish? It's fresh.|think|thinks|thinking|thought|A|What do you think of... 询问看法。|M5: 味道感官
+$$$
+The vegetables look very ________.|sweet|fresh|salty|hungry|B|蔬菜看起来很“新鲜（fresh）”。|M5: 味道感官
+$$$
+I feel very ________ now. I can't wait to eat.|hungry|salty|sweet|delicious|A|hungry意为“饥饿的”。|M5: 味道感官
+$$$
+The dumplings ________ great. Let's try some.|look|looks|looking|is look|A|主语dumplings是复数，look用原形。|M5: 味道感官
+$$$
+The ice cream is very ________. I love it.|sweet|salty|fresh|healthy|A|冰激凌是甜的（sweet）。|M5: 味道感官
+$$$
+There are so many things ________.|try|to try|trying|tries|B|many things to try 意为“可以尝试的东西”。|M5: 味道感官
+$$$
+The meat ________ delicious.|taste|tastes|tasting|is taste|B|不可数名词meat看作单数，taste加s。|M5: 味道感官
+$$$
+Chinese people like eating rice, but Westerners eat ________.|dumplings|bread|noodles|pancakes|B|西方人主食通常是面包。|M5: 味道感官
+$$$
+Chinese people use chopsticks and ________ for meals.|plates|bowls|forks|knives|B|中国人习惯用碗（bowls）吃饭。|M5: 味道感官
+$$$
+In the West, people usually use a ________ and fork.|knife|bowl|chopstick|spoon|A|西方人用刀叉（knife and fork）。|M5: 味道感官
+$$$
+People from Guangzhou enjoy ________ food most.|hot|salty|sweet and sour|bitter|C|广州人最喜欢甜酸味。|M5: 味道感官
+$$$
+People from Sichuan love ________ food.|hot|sweet|salty|sour|A|四川人喜欢辣的食物。|M5: 味道感官
+$$$
+In Beijing, people eat ________ pancakes and dumplings.|much|many|more|most|C|Beijing people eat more... 表示更多。|M5: 味道感官
+$$$
+Some people think Sichuan food ________ terrible.|taste|tastes|tasting|is taste|B|主语food是不可数，加s。|M5: 味道感官
+$$$
+China is famous ________ its food.|in|for|with|at|B|be famous for 意为“以……闻名”。|M5: 味道感官
+$$$
+________, you can taste roast duck in Beijing.|For example|Also|But|So|A|For example 意为“例如”。|M5: 味道感官
+$$$
+Western people usually eat their meals on a ________.|bowl|plate|basket|bag|B|西方人通常在盘子里用餐。|M5: 味道感官
+$$$
+What ________ the weather like today?|am|is|are|be|B|问天气的固定句型：What is...like?|M6: 天气变化
+$$$
+How ________ the weather in October in England?|am|is|are|be|B|问天气的固定句型：How is the weather?|M6: 天气变化
+$$$
+I think it ________ rain soon. Look at the clouds.|was|will|did|am|B|will rain 意为“将要下雨”。|M6: 天气变化
+$$$
+It's windy. The boy's hat is ________ away.|fly|flies|flying|flew|C|is flying away 意为“正在飞走”。|M6: 天气变化
+$$$
+In October, it's very windy and ________.|cool|hot|warm|dry|A|十月通常是凉爽的。|M6: 天气变化
+$$$
+There are many ________ in the sky. It's cloudy.|clouds|cloudys|cloud|clouding|A|many 后面接名词复数 clouds。|M6: 天气变化
+$$$
+Look! It's ________ outside. Take your umbrella.|rain|rainy|raining|rains|C|Look! 提示正在进行时。|M6: 天气变化
+$$$
+I hope I can visit England ________ day.|any|some|every|all|B|some day 意为“将来某一天”。|M6: 天气变化
+$$$
+We like to play ________ on sunny days.|indoor|outdoors|door|inside|B|outdoors 意为“在户外”。|M6: 天气变化
+$$$
+It is often hot and ________ in July in Guangzhou.|wet|dry|snowy|cold|A|广州的七月通常是又热又湿的。|M6: 天气变化
+$$$
+Yesterday ________ my first day in England.|is|was|are|were|B|yesterday 提示用过去时。|过去时专项
+$$$
+The temperature ________ only 15°C this morning.|is|was|are|were|B|this morning 提示事情已发生。|过去时专项
+$$$
+I ________ something interesting about the weather.|learn|learns|learned|learning|C|过去发生的动作加ed。|过去时专项
+$$$
+The weather quickly ________ when I was outside.|change|changes|changed|is change|C|描述过去发生的变化。|过去时专项
+$$$
+The clouds ________ away and the sun shone.|go|goes|went|doing|C|go 的过去式是不规则变化 went。|过去时专项
+$$$
+It was ________ hard at 12:00. I had no umbrella.|rain|rains|raining|rainy|C|was raining 表示当时正在下雨。|过去时专项
+$$$
+I ________ my coat and walked home yesterday.|put in|put on|put out|take off|B|put on 穿上，过去式还是 put。|过去时专项
+$$$
+Last week, we ________ to the zoo with our teacher.|go|goes|went|going|C|Last week 提示过去时。|过去时专项
+$$$
+-Was it cold in the morning? -Yes, it ________.|is|was|could|did|B|was 提问，was 回答。|过去时专项
+$$$
+My brother loves ________ model ships.|make|making|makes|to making|B|love doing 意为“喜欢做某事”。|最终冲刺A
+$$$
+He is very good at ________. He can draw well.|draw|draws|drawing|is drawing|C|be good at 后面接动词 -ing。|最终冲刺A
+$$$
+Let's ________ swimming together after school!|go|goes|going|to go|A|Let's 后面接动词原形。|最终冲刺A
+$$$
+The talking robot can ________ English and Chinese.|say|tell|speak|talk|C|“说语言”固定搭配用 speak。|最终冲刺A
+$$$
+On ________, we stay at school and have classes.|weekdays|weekends|sunday|saturday|A|weekdays 意为“工作日”。|最终冲刺A
+$$$
+Mrs Chen often goes to the ________ to buy vegetables.|cinema|gym|market|library|C|去市场买菜。|最终冲刺A
+$$$
+Can I have a ________ of orange juice, please?|box|bottle|cup|can|B|a bottle of... 意为“一瓶”。|最终冲刺A
+$$$
+For ________, we can have some birthday cake.|starters|main course|dessert|drink|C|蛋糕属于甜点（dessert）。|最终冲刺B
+$$$
+In Guangzhou, people enjoy sweet and ________ food most.|sour|hot|salty|healthy|A|sweet and sour 意为“甜酸味”。|最终冲刺B
+$$$
+Look! It's ________ hard now. Don't go out.|rain|rainy|raining|rains|C|now 提示现在进行时。|最终冲刺B
+$$$
+What ________ you doing, Jiamin? I'm reading.|am|is|are|be|C|问“你正在做”用 What are you doing?|最终冲刺B
+$$$
+My hobby is ________ pets.|keep|keeping|keeps|to keep|B|expressing hobby uses 'is doing'.|最终冲刺B
+$$$
+Mike is a great painter. He ________ drawing animals.|like|likes|liking|is like|B|He 是三单，动词 like 加 s。|最终冲刺B
+$$$
+I am very good at ________. I want to be a painter.|draw|draws|drawing|is draw|C|be good at 后面接 -ing。|最终冲刺B
+$$$
+Can the robot ________ the room for you?|clean|cleans|cleaning|to clean|A|can 后面接动词原形。|最终冲刺B
+$$$
+Ben never ________ swimming on weekdays.|go|goes|going|is go|B|Ben 是三单，动词 go 加 es。|最终冲刺B
+$$$
+-Can you jump high? -Of course I ________.|am|do|can|will|C|can 提问用 can 回答。|最终冲刺B
+$$$
+Look! The girl ________ in the music room.|sing|sings|is singing|singing|C|提示动作正在进行。|最后总复习
+$$$
+We should ________ more vegetables and fruit.|eat|eats|eating|is eat|A|should 后面接动词原形。|最后总复习
+$$$
+Jiamin ________ model planes every Saturday.|make|makes|is making|making|B|表示习惯动作，主语单数加s。|最后总复习
+$$$
+I feel very thirsty. I want ________ to drink.|something cold|cold something|anything cold|cold anything|A|形容词后置。|最后总复习
+$$$
+What ________ we have for dinner tonight?|can|should|do|are|B|should 表示征求意见或建议。|最后总复习
+$$$
+For the main course, we can have fish and ________.|potato|potatoes|potatos|potating|B|土豆复数是加 es。|最后总复习
+$$$
+Western people usually eat ________ and sandwiches.|rice|bread|noodles|dumplings|B|面包是西方人的主食。|最后总复习
+$$$
+People from Guangzhou enjoy ________ food most.|hot|salty|sweet and sour|bitter|C|广东人偏爱甜酸。|最后总复习
+$$$
+The fish ________ delicious. I want to try it.|smell|smells|smelling|is smell|B|感官动词描述特征加s。|最后总复习
+$$$
+Everything ________ great in this restaurant.|look|looks|looking|are look|B|everything 谓语动词加 s。|最后总复习
+$$$
+Chinese people use chopsticks and ________ for rice.|knives|forks|bowls|plates|C|中国人吃饭习惯用碗。|最后总复习
+$$$
+China is famous ________ its delicious food.|in|for|with|at|B|be famous for 是固定短语。|最后总复习
+$$$
+Westerners usually eat their meals with a ________ and fork.|knife|bowl|chopstick|spoon|A|西方人用餐具是刀叉。|最后总复习
+$$$
+What ________ the weather like today?|am|is|are|be|B|问天气的固定句型。|最后总复习
+$$$
+How ________ the weather in England in October?|am|is|are|be|B|问天气的固定句型。|最后总复习
+$$$
+There are many ________ in the sky. It's cloudy.|clouds|cloudys|cloud|clouding|A|clouds 是名词复数。|最后总复习
+$$$
+The sun is shining. It is a ________ day.|sun|sunny|suny|suning|B|sun 的形容词是 sunny。|最后总复习
+$$$
+I think it ________ rain soon. Take an umbrella.|was|will|did|am|B|will rain 意为“将要下雨”。|最后总复习
+$$$
+What's the ________? It's 15°C.|weather|time|temperature|degree|C|提问温度。|最后总复习
+$$$
+In October, it's often windy and ________.|cool|hot|warm|dry|A|十月通常爽。|最后总复习
+$$$
+We like to play ________ on sunny days.|indoor|outdoors|door|inside|B|outdoors 意为“在户外”。|最后总复习
+$$$
+It's windy. The boy's hat is ________ away.|fly|flies|flying|flew|C|正在飞走。|最后总复习
+$$$
+It is often hot and ________ in July in Guangzhou.|wet|dry|snowy|cold|A|广州的七月通常湿热。|最后总复习
+$$$
+Yesterday ________ my first day in England.|is|was|are|were|B|yesterday 提示用过去时。|最后总复习
+$$$
+I ________ something interesting about the weather.|learn|learns|learned|learning|C|过去发生的动作。|最后总复习
+$$$
+The weather quickly ________ when I was outside.|change|changes|changed|is change|C|过去的变化用ed。|最后总复习
+$$$
+The clouds ________ away and the sun started to shine.|go|goes|went|going|C|go 的过去式是 went。|最后总复习
+$$$
+The sun started ________ shine in the afternoon.|to|at|for|on|A|start to do 开始。|最后总复习
+$$$
+I ________ on my coat and walked home.|put|puts|putting|is put|A|put 的过去式还是 put。|最后总复习
+$$$
+It was ________ hard at 12:00. I was wet.|rain|rains|raining|rainy|C|表示当时正在下雨。|最后总复习
+$$$
+I ________ no umbrella, so I walked home.|have|has|had|having|C|have 的过去式是 had。|最后总复习
+$$$
+-Was it cold this morning? -Yes, it ________.|is|was|does|did|B|was 提问用 was 回答。|最后总复习
+$$$
+Xiaoling is very good at ________.|draw|draws|drawing|is drawing|C|be good at 后面接 -ing。|最后总复习
+$$$
+-What are you doing now? -I ________ a model plane.|make|makes|am making|making|C|now 提示进行时。|最后总复习
+$$$
+My hobby is ________ pets, like cats and dogs.|keep|keeping|keeps|to keep|B|My hobby is 后面接 -ing。|最后总复习
+$$$
+Jiamin has more ________ 20 model ships.|many|much|than|most|C|more than 表示“多于”。|最后总复习
+$$$
+The robot can ________ from one to one hundred.|count|counts|counting|is count|A|can 后面接动词原形。|最后总复习
+$$$
+Ms White wants to ________ with Ben.|talk|talks|talking|is talk|A|want to 后面接动词原形。|最后总复习
+$$$
+I can't ________ my pen. Where is it?|look for|find|look at|look|B|find 意为“找到”。|最后总复习
+$$$
+We go to school ________ weekdays.|at|in|on|for|C|在工作日用介词 on。|最后总复习
+$$$
+My father ________ some reading every night.|do|does|doing|is doing|B|三单主语加 es。|最后总复习
+$$$
+When she grows up, she wants to ________ a painter.|be|is|am|are|A|want to be... 意为“成为”。|最后总复习
+$$$
+-________ is the coke? -It's three yuan.|How many|How much|How old|How|B|提问价格。|最后总复习
+$$$
+What do you ________ of the chicken? It's delicious.|think|thinks|thinking|thought|A|What do you think of... 询问看法。|最后总复习
+$$$
+-________ is Ben? -He is in the gym.|What|Where|Who|How|B|提问地点。|最后总复习
+$$$
+________ Ben often go swimming on Saturday?|Do|Does|Is|Can|B|一般现在时疑问句借用 Does。|最后总复习
+$$$
+My brother can swim very ________.|fast|high|far|well|A|描述游得快用 fast。|最后总复习
+$$$
+We ________ eat too much candy. It's bad for teeth.|can|should|shouldn't|can't to|C|建议不应该。|最后总复习
+$$$
+Let's start ________ now. I'm hungry!|cook|cooks|cooking|to cooking|C|start doing sth. 意为“开始”。|最后总复习
+$$$
+I like eating rice ________ it is healthy.|but|or|because|so|C|because 表示原因。|最后总复习
+$$$
+-________ is the weather like? -It's sunny.|How|What|Where|Which|B|What...like? 问天气。|最后总复习
+$$$
+-________ the temperature? -It's 20°C.|What's|How's|Where's|What|A|What's the temperature?|最后总复习
+$$$
+Ben ________ goes swimming on weekdays. He is busy.|always|never|often|usually|B|never 表示“从不”。|最后总复习
+$$$
+What ________ you want for dessert? I want some cake.|do|does|are|can|A|主语是 you，用 do。|最后总复习
+$$$
+We should ________ lots of fruit and vegetables.|eat|eats|eating|to eat|A|should 后面接动词原形。|最后总复习
+$$$
+I want to drink a cup of tea ________ milk.|or|with|for|but|B|with milk 意为“加牛奶的”。|最后总复习
+$$$
+Let's start ________. I am very hungry now.|cook|cooks|cooking|to cooking|C|start doing sth. 意为“开始”。|最后总复习
+$$$
+There are three ________ of milk on the table.|box|boxes|boxs|boxing|B|box 的复数是加 es。|最后总复习
+$$$
+You ________ eat too much candy. It's bad for teeth.|can|should|shouldn't|can't to|C|shouldn't 意为“不应该”。|最后总复习
+$$$
+My mother ________ to the market every morning.|go|goes|going|is go|B|三单主语加 es。|最后总复习
+$$$
+I want to buy ________ cold to drink.|something|anything|some|any|A|形容词后置。|最后总复习
+$$$
+-Do you want coffee or tea? -________, please.|Coffee|Yes|No|Thanks|A|选择疑问句选其一回答。|最后总复习
+$$$
+The chicken ________ delicious. It smells good.|taste|tastes|tasting|is taste|B|三单动词加 s。|最后总复习
+$$$
+What do you ________ of the fish? It's fresh.|think|thinks|thinking|thought|A|What do you think of...|最后总复习
+$$$
+The dumplings ________ great. Let's try some.|look|looks|looking|is look|A|复数主语用动词原形。|最后总复习
+$$$
+Western people usually eat their meals on a ________.|bowl|plate|basket|bag|B|西方人用盘子。|最后总复习
+$$$
+Chinese people use ________ to have rice and noodles.|knives|forks|chopsticks|plates|C|中国人用筷子。|最后总复习
+$$$
+China is famous ________ its food.|in|for|with|at|B|be famous for.||最后总复习
+$$$
+The ice cream is too ________. I don't like it.|sweet|salty|fresh|hot|A|冰激凌太甜了。|最后总复习
+$$$
+Everything ________ great in the restaurant.|look|looks|looking|are look|B|everything 作主语看作单数。|最后总复习
+$$$
+Sichuan food is very ________. It's too hot for me.|sweet|salty|spicy|sour|C|四川菜通常很辣。|最后总复习
+$$$
+Western people usually use a ________ and fork.|knife|bowl|chopstick|spoon|A|西方人用刀叉。|最后总复习
+$$$
+What ________ the weather like today?|am|is|are|be|B|问天气的固定句型。|最后总复习
+$$$
+Yesterday ________ my first day in England.|is|was|are|were|B|yesterday 提示用过去时。|最后总复习
+$$$
+The temperature ________ only 15°C this morning.|is|was|are|were|B|this morning 提示过去时。|最后总复习
+$$$
+The weather quickly ________ when I was outside.|change|changes|changed|is change|C|过去的变化用ed。|最后总复习
+$$$
+I ________ something interesting from the report.|learn|learns|learned|learning|C|学到了加ed。|最后总复习
+$$$
+-Was it cold yesterday? -Yes, it ________.|is|was|does|did|B|was 提问，was回答。|最后总复习
+$$$
+I ________ no umbrella, so I walked home.|have|has|had|having|C|have 的过去式是 had。|最后总复习
+$$$
+I ________ on my coat and went out yesterday.|put|puts|putting|is put|A|put 过去式还是 put。|最后总复习
+$$$
+The clouds ________ away and the sun shone.|go|goes|went|going|C|go 过去式是 went。|最后总复习
+$$$
+-What's the temperature? -It's 25 ________.|degrees|degree|Celsius|Celsius|A|复数用 degrees。|最后总复习
+$$$
+Look! Jiamin is ________ a model plane.|make|makes|making|to make|C|Look 提示正在进行。|最后总复习
+$$$
+My brother often ________ model ships at the weekend.|make|makes|making|to make|B|often 提示一般现在时。|最后总复习
+$$$
+Yesterday he ________ a model ship for me.|make|makes|making|made|D|yesterday 提示过去时。|最后总复习
+$$$
+Xiaoling is very good at ________ music.|play|plays|playing|is play|C|be good at 后面接 -ing。|最后总复习
+$$$
+The talking robot ________ do everything for me.|am|is|can|are|C|表达能力用 can。|最后总复习
+$$$
+Can you ________ my homework? No, I won't.|do|does|doing|to do|A|can 后面接动词原形。|最后总复习
+$$$
+Janet ________ more than 500 stamps.|have|has|having|is have|B|主语单数用 has。|最后总复习
+$$$
+There ________ some bread on the plate now.|am|is|are|be|B|bread 是不可数名词。|最后总复习
+$$$
+How ________ is the burger? It's ten yuan.|many|much|old|far|B|提问价格。|最后总复习
+$$$
+When she grows up, she ________ to be a teacher.|want|wants|wanting|is want|B|主语单数加 s。|最后总复习
+$$$
+I am ________ for my pen, but I can't ________ it.|finding;look|looking;find|find;looking|look;finding|B|look for 过程，find 结果。|最后总复习
+$$$
+My hobby is ________ pets. I ________ animals.|keep;love|keeping;love|keeping;loves|keep;loves|B|hobby is doing sth.||最后总复习
+$$$
+The chicken ________ delicious. I ________ to try some.|smells;want|smell;want|smelling;wants|smells;wants|A|三单加s。|最后总复习
+$$$
+Let's ________ swimming. It ________ fun.|go;is|goes;is|going;are|go;are|A|Let's 后接原形。|最后总复习
+$$$
+The clouds went ________ and the sun started to ________.|in;shine|away;shine|out;shines|up;shining|B|go away 离开。|最后总复习
+$$$
+I ________ my coat and walked home yesterday.|put in|put on|put out|put off|B|put on 穿上。|最后总复习
+`;
+
+// --- 逻辑控制 ---
+let stats = JSON.parse(localStorage.getItem('5A_G_SFX_LUKA')) || {};
+let curCat = "", done = 0, timer = 0, clock = null, lock = false, tC = 0, rC = 0, sessS = Date.now(), cumul = parseInt(localStorage.getItem('5A_G_TIME')) || 0;
+let sessionPool = []; 
+
+const playFeedback = (isCorrect) => {
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        if (isCorrect) {
+            osc.type = 'sine'; osc.frequency.setValueAtTime(880, ctx.currentTime);
+            gain.gain.setValueAtTime(0.08, ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
+        } else {
+            osc.type = 'sawtooth'; osc.frequency.setValueAtTime(150, ctx.currentTime);
+            gain.gain.setValueAtTime(0.08, ctx.currentTime); gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.3);
+        }
+        osc.start(); osc.stop(ctx.currentTime + 0.3);
+    } catch(e) {}
+};
+
+const db = [];
+function loadData() {
+    const lines = myDataString.trim().split('$$$');
+    lines.forEach(line => {
+        if (!line.trim()) return;
+        const parts = line.split('|');
+        if (parts.length >= 8) db.push(parts.map(p => p.trim()));
+    });
+}
+loadData();
+
+function showMenu() {
+    document.getElementById('menu-screen').style.display='block'; 
+    document.getElementById('game-screen').style.display='none'; 
+    document.getElementById('modal').style.display='none'; 
+    lock = false;
+    
+    let mastered = db.filter(i => stats[i[0]]?.m).length;
+    document.getElementById('bar-grammar').style.width = (mastered / (db.length || 1) * 100) + '%';
+    document.getElementById('txt-grammar').innerText = mastered + ' / ' + db.length;
+    
+    const grid = document.getElementById('category-btns'); grid.innerHTML = '';
+    const cats = [...new Set(db.map(i => i[7]))];
+    cats.forEach(c => {
+        let list = db.filter(i => i[7] === c), mCount = list.filter(i => stats[i[0]]?.m).length;
+        let btn = document.createElement('div'); btn.className = 'cat-btn';
+        btn.innerHTML = `<span class="cat-name">${c}</span><span class="cat-info">${mCount}/${list.length}</span>`;
+        btn.onclick = () => { curCat = c; initLevel(); }; grid.appendChild(btn);
+    });
+    
+    let msk = Object.keys(stats).filter(k => !stats[k].m && (stats[k].e || []).length > 0);
+    if(msk.length > 0) {
+        let btn = document.createElement('div'); btn.className = 'cat-btn'; btn.style.borderColor = 'var(--danger)'; btn.style.background = '#fff5f5';
+        btn.innerHTML = `<span class="cat-name" style="color:var(--danger)">📕 错题监狱</span><span class="cat-info">${msk.length}题待重审</span>`;
+        btn.onclick = () => { curCat = "错题"; initLevel(); }; grid.appendChild(btn);
+    }
+}
+
+function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
+function initLevel() {
+    document.getElementById('modal').style.display='none';
+    document.getElementById('menu-screen').style.display='none'; 
+    document.getElementById('game-screen').style.display='flex';
+    document.getElementById('cur-cat-name').innerText = curCat;
+    
+    clearInterval(clock); timer = 0; done = 0; tC = 0; rC = 0; clock = null; lock = false;
+    document.getElementById('timer-val').innerText = '0'; 
+
+    let pool = (curCat === "错题") ? 
+        db.filter(i => !stats[i[0]]?.m && (stats[i[0]]?.e || []).length > 0) : 
+        db.filter(i => i[7] === curCat);
+    
+    sessionPool = shuffle([...pool]).slice(0, 10); 
+    renderTask();
+}
+
+function renderTask() {
+    if(done >= sessionPool.length) { finish(); return; }
+    const q = sessionPool[done]; 
+    document.getElementById('q-area').innerText = q[0];
+    const optArea = document.getElementById('opt-area'); optArea.innerHTML = '';
+    ['A','B','C','D'].forEach((o, idx) => {
+        let div = document.createElement('div'); div.className = 'option-card';
+        div.innerHTML = `<b style="color:var(--primary); margin-right:8px;">${o}.</b> ${q[idx+1]}`;
+        div.onclick = () => { if(!lock) check(o, q[5], q[6], q[0]); }; optArea.appendChild(div);
+    });
+}
+
+function check(pick, ans, exp, wk) {
+    if(!clock) clock = setInterval(() => { timer++; document.getElementById('timer-val').innerText = timer; }, 1000);
+    tC++; if(!stats[wk]) stats[wk] = { m: false, s: 0, e: [] };
+    const allOptions = document.querySelectorAll('.option-card');
+    
+    if(pick === ans) {
+        playFeedback(true);
+        rC++; 
+        if(stats[wk].e.length === 0) stats[wk].m = true; 
+        else { stats[wk].s++; if(stats[wk].s >= 5) stats[wk].m = true; }
+        allOptions.forEach(card => { if(card.innerText.startsWith(pick + '.')) card.classList.add('correct'); });
+        lock = true; 
+        setTimeout(() => { lock = false; done++; renderTask(); }, 600);
+    } else {
+        playFeedback(false);
+        stats[wk].m = false; stats[wk].s = 0; if(!stats[wk].e) stats[wk].e = []; stats[wk].e.push(Date.now());
+        allOptions.forEach(card => { if(card.innerText.startsWith(pick + '.')) card.classList.add('wrong'); });
+        document.getElementById('explain-content').innerHTML = `<b>正确答案是：${ans}</b><br><br>${exp}`;
+        document.getElementById('explain-modal').style.display = 'block'; lock = true;
+    }
+    localStorage.setItem('5A_G_SFX_LUKA', JSON.stringify(stats));
+}
+
+function closeExp() { document.getElementById('explain-modal').style.display = 'none'; lock = false; done++; renderTask(); }
+function finish() { 
+    clearInterval(clock); 
+    document.getElementById('report-html').innerHTML = `本轮准确率: <b>${Math.floor(rC/(tC||1)*100)}%</b><br>用时: <b>${timer}s</b><br><br>点击“下一组”将为您随机刷题巩固。`; 
+    document.getElementById('modal').style.display = 'block'; 
+}
+
+setInterval(() => {
+    cumul++; localStorage.setItem('5A_G_TIME', cumul); let sM = Math.floor((Date.now()-sessS)/60000);
+    if(sM > 0 && sM % 15 === 0) alertH("👀 已经特训15分钟了！请抬头远眺。");
+}, 60000);
+function alertH(m) { document.getElementById('health-content').innerHTML = m; document.getElementById('health-modal').style.display = 'block'; }
+function closeH() { document.getElementById('health-modal').style.display = 'none'; }
+showMenu();
+</script>
+</body>
+</html>

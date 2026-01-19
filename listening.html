@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>5A听力特训 V81</title>
+<style>
+  :root { --main:#673ab7; --ok:#4caf50; --err:#f44336; --warn:#ff9800; --bg:#f3f4f6; }
+  body { font-family:'Segoe UI',sans-serif; background:var(--bg); margin:0; display:flex; flex-direction:column; align-items:center; height:100vh; overflow:hidden; user-select:none; }
+  
+  header { background:var(--main); color:#fff; width:100%; padding:15px 0; text-align:center; font-weight:bold; box-shadow:0 2px 8px rgba(0,0,0,0.15); z-index:10; }
+  .app-box { width:94%; max-width:500px; background:#fff; border-radius:20px; padding:20px; box-shadow:0 4px 12px rgba(0,0,0,0.05); margin-top:15px; box-sizing:border-box; flex:1; overflow-y:auto; display:flex; flex-direction:column; }
+  
+  /* 进度条 */
+  .stats-row { display:flex; justify-content:space-between; font-size:0.85rem; color:#666; margin:5px 0; font-weight:bold; }
+  .bar-bg { height:14px; background:#eee; border-radius:7px; overflow:hidden; margin-bottom:12px; }
+  .bar-fill { height:100%; width:0%; transition:width 0.3s ease; background:var(--main); }
+  
+  .total-score { background:#fff8e1; border:1px solid #ffe0b2; color:#f57f17; padding:10px; border-radius:10px; font-weight:bold; text-align:center; margin-bottom:15px; font-size:0.9rem; }
+
+  /* 菜单 */
+  .menu-btn { background:#fff; border:2px solid #e0e0e0; border-radius:16px; padding:18px; margin-bottom:12px; text-align:center; cursor:pointer; position:relative; transition:0.1s; }
+  .menu-btn:active { transform:scale(0.98); background:#f5f5f5; }
+  .menu-title { font-size:1.1rem; font-weight:bold; color:var(--main); display:block; }
+  .menu-sub { font-size:0.75rem; color:#888; }
+  .badge { position:absolute; top:-8px; right:-8px; background:var(--err); color:#fff; padding:2px 10px; border-radius:12px; font-size:0.75rem; font-weight:bold; box-shadow:0 2px 4px rgba(0,0,0,0.2); }
+
+  /* 游戏区 */
+  .hud { display:flex; justify-content:space-between; margin-bottom:10px; color:#555; font-size:0.9rem; font-weight:bold; border-bottom:1px solid #eee; padding-bottom:8px; }
+  .instr-box { background:#e3f2fd; border:1px solid #bbdefb; border-radius:10px; padding:10px; font-size:0.85rem; color:#1565c0; margin-bottom:15px; line-height:1.5; text-align:left; }
+  
+  .play-zone { text-align:center; margin:10px 0; }
+  .speaker { width:80px; height:80px; background:var(--main); border-radius:50%; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; border:5px solid #d1c4e9; transition:0.1s; box-shadow:0 4px 10px rgba(103,58,183,0.3); }
+  .speaker:active { transform:scale(0.95); }
+  .speaker svg { width:40px; height:40px; fill:#fff; }
+  
+  .q-text { min-height:50px; background:#f5f5f5; border-radius:12px; display:flex; align-items:center; justify-content:center; padding:15px; margin:15px 0; color:#3949ab; font-weight:bold; font-size:1.1rem; border-left:5px solid #3949ab; visibility:hidden; opacity:0; transition:opacity 0.3s; }
+  .q-text.show { visibility:visible; opacity:1; }
+
+  .opt-list { display:flex; flex-direction:column; gap:10px; }
+  .opt { background:#fff; border:2px solid #eee; padding:16px; border-radius:14px; font-size:1.1rem; cursor:pointer; text-align:left; font-weight:500; transition:0.1s; display:flex; align-items:center; }
+  .opt b { color:var(--main); margin-right:12px; }
+  .opt.correct { border-color:var(--ok); background:#e8f5e9; color:#2e7d32; }
+  .opt.wrong { border-color:var(--err); background:#ffebee; color:#c62828; animation:shake 0.4s; }
+
+  /* 弹窗 */
+  .modal-mask { position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:999; display:none; align-items:center; justify-content:center; }
+  .modal { background:#fff; width:85%; max-width:360px; border-radius:24px; padding:30px; text-align:center; animation:pop 0.3s; }
+  .score-big { font-size:3rem; font-weight:900; color:var(--main); margin:10px 0; }
+  .btn { width:100%; padding:14px; border:none; border-radius:30px; font-size:1.1rem; font-weight:bold; cursor:pointer; margin-top:10px; }
+  .btn-primary { background:var(--main); color:#fff; }
+  .btn-sec { background:#eee; color:#555; }
+  
+  .copyright-footer { text-align:center; margin-top:20px; color:#bdbdbd; font-size:0.7rem; font-weight:bold; }
+
+  @keyframes pop { 0%{transform:scale(0.8);opacity:0} 100%{transform:scale(1);opacity:1} }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }
+</style>
+</head>
+<body onclick="unlockAudio()">
+
+<header>5A 听力特训王 V81</header>
+
+<div id="page-menu" class="app-box">
+  <div class="total-score">🏆 累计正确答题：<span id="txt-total">0</span></div>
+
+  <div class="stats-row"><span>🔊 辨音覆盖进度 (至少做对1次)</span><span id="txt-p">0/30</span></div>
+  <div class="bar-bg"><div id="bar-p" class="bar-fill"></div></div>
+  
+  <div class="stats-row"><span>💬 对话覆盖进度 (至少做对1次)</span><span id="txt-d">0/100</span></div>
+  <div class="bar-bg"><div id="bar-d" class="bar-fill"></div></div>
+
+  <div class="menu-btn" onclick="startGroup('p_new')">
+    <span class="menu-title">🔊 辨音闯关 (5题)</span>
+    <span class="menu-sub">优先出新题 · 听音辨词</span>
+  </div>
+  
+  <div class="menu-btn" onclick="startGroup('d_new')">
+    <span class="menu-title">💬 对话闯关 (5题)</span>
+    <span class="menu-sub">优先出新题 · 听问选答</span>
+  </div>
+
+  <div id="btn-mistake" class="menu-btn" onclick="startGroup('mistake')" style="border-color:var(--err); background:#fff5f5; display:none;">
+    <div id="badge-mistake" class="badge">0</div>
+    <span class="menu-title" style="color:var(--err)">📕 错题攻坚 (5题)</span>
+    <span class="menu-sub">循环练习直至移除</span>
+  </div>
+  
+  <div style="flex:1"></div>
+  <button class="btn-sec" style="font-size:0.8rem; padding:8px; width:auto; align-self:center;" onclick="resetAll()">🗑️ 清空所有数据</button>
+  <div class="copyright-footer">Copyright © luka 版权所有</div>
+</div>
+
+<div id="page-game" class="app-box" style="display:none;">
+  <div class="hud">
+    <span id="hud-progress">第 1 / 5 题</span>
+    <span id="hud-score" style="color:var(--main)">本组得分: 0</span>
+  </div>
+
+  <div class="instr-box">
+    📢 <b>提示：</b>自动慢读2遍。间隔1.5秒。<br>
+    ✅ <b>通关：</b>首答正确 + 重听少。<br>
+    🔄 <b>纠错：</b><b style="color:var(--err)">答错请重选，直到选对进入下一题。</b>
+  </div>
+  
+  <div class="play-zone">
+    <div class="speaker" onclick="manualPlay()">
+      <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+    </div>
+    <div style="font-size:0.8rem; color:#888; margin-top:8px; font-weight:bold;" id="play-status">手动重听: 0/2</div>
+  </div>
+
+  <div id="q-reveal" class="q-text"></div>
+  <div id="opt-box" class="opt-list"></div>
+  
+  <div style="flex:1"></div>
+  <button class="btn-sec" onclick="goHome()">返回主页</button>
+  <div class="copyright-footer">Copyright © luka 版权所有</div>
+</div>
+
+<div id="modal-end" class="modal-mask">
+  <div class="modal">
+    <h2 id="end-title"></h2>
+    <div class="score-big" id="end-score"></div>
+    <p id="end-msg" style="color:#666; margin-bottom:20px;"></p>
+    <button class="btn btn-primary" onclick="reloadGroup()">再来一组</button>
+    <button class="btn btn-sec" onclick="goHome()">返回主页</button>
+    <div class="copyright-footer" style="margin-top:10px;">Copyright © luka 版权所有</div>
+  </div>
+</div>
+
+<script>
+// --- [题库 V81 修正版] ---
+const DB_P = [{"a":"club","b":"blind","ans":"B"},{"a":"price","b":"frog","ans":"A"},{"a":"sky","b":"space","ans":"B"},{"a":"double","b":"couple","ans":"B"},{"a":"mind","b":"could","ans":"A"},{"a":"stormy","b":"fighting","ans":"A"},{"a":"grass","b":"brave","ans":"B"},{"a":"cream","b":"price","ans":"A"},{"a":"blind","b":"club","ans":"B"},{"a":"guesses","b":"guess","ans":"A"},{"a":"stumble","b":"skate","ans":"A"},{"a":"candle","b":"bubble","ans":"B"},{"a":"plane","b":"blind","ans":"B"},{"a":"flag","b":"glad","ans":"A"},{"a":"present","b":"bread","ans":"A"},{"a":"cream","b":"green","ans":"A"},{"a":"sport","b":"story","ans":"A"},{"a":"middle","b":"little","ans":"A"},{"a":"plane","b":"plant","ans":"B"},{"a":"glove","b":"glass","ans":"A"},{"a":"bread","b":"blue","ans":"A"},{"a":"flat","b":"frog","ans":"B"},{"a":"sport","b":"school","ans":"B"},{"a":"cry","b":"clean","ans":"A"},{"a":"cuddle","b":"middle","c":"muddle","ans":"A"},{"a":"table","b":"stable","c":"able","ans":"B"},{"a":"street","b":"stick","c":"steak","ans":"B"},{"a":"flowing","b":"fighting","c":"floating","ans":"C"},{"a":"mind","b":"hide","c":"bind","ans":"B"},{"a":"sting","b":"straight","c":"stream","ans":"A"}];
+const DB_D = [{"q":"Can you play the piano?","a":"Yes, I do.","b":"Yes, I can.","c":"No, it can't.","ans":"B"},{"q":"What can the girl do?","a":"Yes, she can.","b":"She can dance.","c":"No, she doesn't.","ans":"B"},{"q":"When does Mike usually draw?","a":"He draws on Sunday.","b":"He likes music.","c":"He can draw.","ans":"A"},{"q":"What’s the weather like in Harbin?","a":"Here you are.","b":"It's cold and snowy.","c":"It is good and healthy.","ans":"B"},{"q":"Where is Jiamin?","a":"Maybe he is in the gym.","b":"He likes fishing.","c":"He wants a cup of tea.","ans":"A"},{"q":"How is the weather today?","a":"It's cold and wet.","b":"It's 9℃.","c":"It can but it won't.","ans":"A"},{"q":"How was the weather yesterday?","a":"It was cold and rainy.","b":"Yes, I was.","c":"It's 12℃.","ans":"A"},{"q":"Does the woman like cooking?","a":"She is a painter.","b":"She likes drawing.","c":"No, she doesn't.","ans":"C"},{"q":"What are you doing right now?","a":"I am swimming.","b":"I think swimming is fun.","c":"Yes, I am.","ans":"A"},{"q":"Can your brother play football?","a":"No, I can't.","b":"Yes, it is.","c":"No, he can't.","ans":"C"},{"q":"Where can I find Tim?","a":"He isn't here.","b":"He is at the library.","c":"Yes, he does.","ans":"B"},{"q":"What would you like to drink?","a":"I'd like a large coke.","b":"Sure.","c":"I want some bread.","ans":"A"},{"q":"What do you think of the salad?","a":"It's good and healthy.","b":"I like the chicken.","c":"I like hot food.","ans":"A"},{"q":"What's the weather like in England?","a":"It is April.","b":"They are delicious.","c":"It is snowy.","ans":"C"},{"q":"Who is the woman in the photo?","a":"I can jump.","b":"My mother.","c":"Yes, they are.","ans":"B"},{"q":"Where is Mr. Wang now?","a":"He can teach us English.","b":"Yes, he is.","c":"He is in the office.","ans":"C"},{"q":"What is your hobby?","a":"My hobby is dancing.","b":"I can read fast.","c":"She likes running.","ans":"A"},{"q":"What is he doing over there?","a":"He is taking photos.","b":"She is drawing.","c":"I am playing music.","ans":"A"},{"q":"What do you think of the soup?","a":"It is tall.","b":"It smells delicious.","c":"It's 8 o'clock.","ans":"B"},{"q":"What does Xiaoling like eating?","a":"She likes playing chess.","b":"She likes making cakes.","c":"She likes eating chips.","ans":"C"},{"q":"What do you usually do at home?","a":"I like summer.","b":"I am strong.","c":"I usually watch TV.","ans":"C"},{"q":"What do you think of the new boy?","a":"No, he doesn't.","b":"He is nice.","c":"He likes reading.","ans":"B"},{"q":"What does she want to do?","a":"She wants some bread.","b":"She wants to play outdoors.","c":"She wants milk.","ans":"B"},{"q":"What's the weather like today?","a":"Cold and dry.","b":"Fish and chips.","c":"Sweet and sour.","ans":"A"},{"q":"How much is this T-shirt?","a":"It's sunny.","b":"It's 15℃.","c":"It's 100 yuan.","ans":"C"},{"q":"What's the temperature outside?","a":"It's cold.","b":"It's 68 yuan.","c":"It's 9℃.","ans":"C"},{"q":"What does your father do?","a":"She is a driver.","b":"He is a driver.","c":"He likes driving.","ans":"B"},{"q":"Can your sister dance?","a":"Yes, I do.","b":"Yes, she can.","c":"Yes, she does.","ans":"B"},{"q":"What can you do?","a":"I can run fast.","b":"football.","c":"I like playing football.","ans":"A"},{"q":"Do you like playing the piano?","a":"Yes, I do.","b":"Yes, I am.","c":"Yes, I can.","ans":"A"},{"q":"What would you like to drink?","a":"I'd like some water.","b":"Yes, I do.","c":"No, I don't.","ans":"A"},{"q":"How is the food in this restaurant?","a":"I like noodles best.","b":"It is delicious.","c":"I want to have noodles.","ans":"B"},{"q":"What is the temperature today?","a":"It is 20℃.","b":"It is sunny.","c":"It is summer.","ans":"A"},{"q":"Which season is it now?","a":"It's warm.","b":"It's spring.","c":"It's 15℃.","ans":"B"},{"q":"Where is Ben?","a":"He is playing music.","b":"He's in the music room.","c":"He likes playing music.","ans":"B"},{"q":"How much is the coat?","a":"It's 200 yuan.","b":"It's very cold.","c":"It's expensive.","ans":"A"},{"q":"Are you good at swimming?","a":"Yes, I can.","b":"Yes, I am.","c":"Yes, I do.","ans":"B"},{"q":"What do you think of the noodles?","a":"No, I am not.","b":"They're delicious.","c":"It's delicious.","ans":"B"},{"q":"Where do you have your PE lesson?","a":"In the classroom.","b":"It's hot.","c":"In the gym.","ans":"C"},{"q":"Which season do you like best?","a":"I like green.","b":"I like spring best.","c":"I like hot food.","ans":"B"},{"q":"Is it a sunny day today?","a":"No, I’m not.","b":"Yes, I do.","c":"Yes, it is.","ans":"C"},{"q":"What would you like to eat?","a":"It smells good.","b":"The cook.","c":"I'd like dumplings with beef.","ans":"C"},{"q":"What's the weather like today?","a":"It's delicious.","b":"It's rainy.","c":"It's 10℃.","ans":"B"},{"q":"Does he like reading books?","a":"Yes, he does.","b":"He likes watching TV.","c":"He usually draws horses.","ans":"A"},{"q":"What are you doing, Jiamin?","a":"I’m making a plane.","b":"I like planes.","c":"I have a plane.","ans":"A"},{"q":"What’s your hobby, Xiaoling?","a":"I am drawing.","b":"My hobby is keeping pets.","c":"I have birds.","ans":"B"},{"q":"Does Jiamin often collect stamps?","a":"Yes, he does.","b":"Yes, he is.","c":"He loves stamps.","ans":"A"},{"q":"What is your hobby, Ben?","a":"I read books.","b":"Every day.","c":"My hobby is music.","ans":"C"},{"q":"How many model ships do you have?","a":"More than 20.","b":"About 50 games.","c":"Every night.","ans":"A"},{"q":"When do you usually read books?","a":"In the room.","b":"Every night.","c":"About 50 games.","ans":"B"},{"q":"What is Jiamin’s hobby?","a":"She likes drawing.","b":"His hobby is cartoons.","c":"He is a painter.","ans":"B"},{"q":"What does he sometimes draw?","a":"A bird in the sky.","b":"In every room.","c":"With pencils.","ans":"A"},{"q":"Does she like drawing people?","a":"Yes, he does.","b":"Yes, she does.","c":"No, she can’t.","ans":"B"},{"q":"What does she usually do on Sunday?","a":"She stays at home.","b":"On their birthday.","c":"Beautiful places.","ans":"A"},{"q":"Where are the drawings?","a":"At 7:00.","b":"In every room.","c":"Very well.","ans":"B"},{"q":"Are you good at drawing?","a":"Yes, I am.","b":"Yes, I do.","c":"I draw cartoons.","ans":"A"},{"q":"Can you swim very fast?","a":"Yes, I do.","b":"Yes, I can.","c":"I love swimming.","ans":"B"},{"q":"Can Xiaoling draw well?","a":"Yes, she draws very well.","b":"She is good.","c":"She can draw.","ans":"A"},{"q":"Can you jump high?","a":"I can run fast.","b":"No, I can’t.","c":"I am jumping.","ans":"B"},{"q":"Happy birthday to you!","a":"You are welcome.","b":"I am happy.","c":"Thank you.","ans":"C"},{"q":"What can the talking robot do?","a":"It can speak English.","b":"It is here.","c":"Yes, it can.","ans":"A"},{"q":"Can you clean the room, please?","a":"I clean well.","b":"Yes, I can.","c":"No, I don’t.","ans":"B"},{"q":"Can you do my homework?","a":"Of course I can.","b":"You are right.","c":"I have homework.","ans":"A"},{"q":"Is the robot good at many things?","a":"Yes, it is.","b":"Yes, it can.","c":"It can help you.","ans":"A"},{"q":"Can you write Chinese?","a":"I like Chinese.","b":"Yes, I can.","c":"I am writing.","ans":"B"},{"q":"Where is Ben?","a":"He is at the pool.","b":"He is swimming.","c":"He wants to talk.","ans":"A"},{"q":"Does Ben often go swimming?","a":"Yes, he does.","b":"He never goes.","c":"In the pool.","ans":"A"},{"q":"Where can I look for Ben?","a":"On weekdays.","b":"In the library.","c":"Take exercise.","ans":"B"},{"q":"Is Ben in the music room?","a":"Yes, he does.","b":"No, he can't.","c":"No, he isn't.","ans":"C"},{"q":"Where is Xiaoling taking exercise?","a":"In the gym.","b":"Every day.","c":"She is healthy.","ans":"A"},{"q":"What is Jiamin doing in the class?","a":"He is doing homework.","b":"He is in the room.","c":"No, he isn't.","ans":"A"},{"q":"Where can I buy vegetables?","a":"Eat it now.","b":"In the market.","c":"It’s delicious.","ans":"B"},{"q":"Is the Chen family busy?","a":"Yes, they are busy.","b":"Yes, he is.","c":"On Saturday.","ans":"A"},{"q":"When does Jiamin go to the Palace?","a":"With his parents.","b":"On Saturday.","c":"He is busy.","ans":"B"},{"q":"Who does Mrs. Chen go with?","a":"With Mr. Chen.","b":"After breakfast.","c":"Yes, she does.","ans":"A"},{"q":"What do you drink for lunch?","a":"A cup of milk tea.","b":"Rice and fish.","c":"At 12:00.","ans":"A"},{"q":"Do you want coffee or tea?","a":"Yes, please.","b":"I want coffee.","c":"I don’t want.","ans":"B"},{"q":"Can I have a large coke?","a":"Sure.","b":"No, I am not.","c":"It’s a can.","ans":"A"},{"q":"Here is your milk.","a":"You are here.","b":"Thanks a lot.","c":"I am fine.","ans":"B"},{"q":"Do you want a bottle of juice?","a":"No, a box of milk.","b":"It is a bottle.","c":"Yes, I do.","ans":"C"},{"q":"What should we have for dinner?","a":"I like dinner.","b":"Rice and fish.","c":"At home.","ans":"B"},{"q":"Let’s start cooking dinner.","a":"I am a cook.","b":"OK.","c":"Dinner is ready.","ans":"B"},{"q":"What can we have for starters?","a":"Tomato and egg soup.","b":"For dinner.","c":"It tastes good.","ans":"A"},{"q":"Do you like to eat rice?","a":"Yes, I do.","b":"I have rice.","c":"It’s on the plate.","ans":"A"},{"q":"What do you think of the fish?","a":"I think so.","b":"It’s delicious.","c":"Try the chicken.","ans":"B"},{"q":"How does the chicken taste?","a":"It tastes good.","b":"It smells delicious.","c":"It looks fresh.","ans":"A"},{"q":"How does the soup smell?","a":"It’s sweet.","b":"It smells delicious.","c":"I like soup.","ans":"B"},{"q":"Does the fruit look fresh?","a":"Yes, it looks good.","b":"It tastes sweet.","c":"I like fruit.","ans":"A"},{"q":"What do Chinese people like eating?","a":"Rice or noodles.","b":"Bread.","c":"On a plate.","ans":"A"},{"q":"How do Western people eat with?","a":"In the West.","b":"With a knife and fork.","c":"Very different.","ans":"B"},{"q":"What taste of food do you like?","a":"Sweet and sour food.","b":"In the gym.","c":"At nine.","ans":"A"},{"q":"Do Western people eat chips?","a":"Yes, they do.","b":"In Beijing.","c":"For breakfast.","ans":"A"},{"q":"What’s the weather like today?","a":"I like it.","b":"It’s cloudy.","c":"It’s April.","ans":"B"},{"q":"How is the weather in summer in Guangzhou?","a":"Windy and cool.","b":"Hot and rainy.","c":"I hope so.","ans":"B"},{"q":"Can we play outdoors today?","a":"It’s cloudy.","b":"No, you can't.","c":"Visit England.","ans":"B"},{"q":"What was the temperature?","a":"It was 15℃.","b":"It’s sunny.","c":"I put on my coat.","ans":"A"},{"q":"Is it hot and dry in England?","a":"Yes, it does.","b":"No, it isn't.","c":"Eat lots of fruit.","ans":"B"},{"q":"When did the sun start to shine?","a":"At lunchtime.","b":"In one day.","c":"It was windy.","ans":"A"},{"q":"What should I wear today?","a":"Wear T-shirts.","b":"It's sunny.","c":"It’s 15℃.","ans":"A"},{"q":"Do you want to fly kites?","a":"I want to go swimming.","b":"It’s windy.","c":"Yes, I do.","ans":"C"}];
+
+// --- 逻辑 ---
+let appData = JSON.parse(localStorage.getItem('5A_LSN_V81')) || {
+  pMastery: new Array(DB_P.length).fill(0),
+  dMastery: new Array(DB_D.length).fill(0),
+  totalCorrect: 0,
+  pErrors: [],
+  dErrors: []
+};
+
+let queue = [];
+let curIdx = 0;
+let curMode = '';
+let lock = false;
+let playCount = 0;
+let isFirstTry = true;
+let score = 0;
+let fixedCount = 0; // 本轮消灭错题数
+let currentUtterance = null;
+
+function unlockAudio() { if(window.speechSynthesis.paused) window.speechSynthesis.resume(); }
+
+function updateHome() {
+  // 统计有多少题星级>0
+  let pStarted = appData.pMastery.filter(s => s > 0).length;
+  let dStarted = appData.dMastery.filter(s => s > 0).length;
+  
+  document.getElementById('txt-p').innerText = `${pStarted}/${DB_P.length}`;
+  document.getElementById('txt-d').innerText = `${dStarted}/${DB_D.length}`;
+  document.getElementById('bar-p').style.width = (pStarted/DB_P.length*100) + '%';
+  document.getElementById('bar-d').style.width = (dStarted/DB_D.length*100) + '%';
+  
+  document.getElementById('txt-total').innerText = appData.totalCorrect || 0;
+
+  // 错题统计
+  let errCount = appData.pErrors.length + appData.dErrors.length;
+  const badge = document.getElementById('btn-mistake');
+  if(errCount > 0) {
+    badge.style.display = 'block';
+    document.getElementById('badge-mistake').innerText = errCount;
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+// 核心推题算法：优先 0星 -> 1-4星 -> 5星
+function startGroup(mode) {
+  curMode = mode;
+  queue = [];
+  
+  if (mode === 'p_new') {
+    let unseen = DB_P.map((_, i) => ({ idx: i, type: 'p' })).filter(x => appData.pMastery[x.idx] === 0);
+    let unmastered = DB_P.map((_, i) => ({ idx: i, type: 'p' })).filter(x => appData.pMastery[x.idx] > 0 && appData.pMastery[x.idx] < 5);
+    let mastered = DB_P.map((_, i) => ({ idx: i, type: 'p' })).filter(x => appData.pMastery[x.idx] === 5);
+    
+    // 填充逻辑
+    unseen.sort(() => Math.random() - 0.5);
+    if (unseen.length >= 5) {
+      queue = unseen.slice(0, 5);
+    } else {
+      queue = unseen; // 先把剩下的新题都拿来
+      let need = 5 - queue.length;
+      if (need > 0) {
+        unmastered.sort(() => Math.random() - 0.5);
+        if (unmastered.length >= need) queue = queue.concat(unmastered.slice(0, need));
+        else {
+          queue = queue.concat(unmastered);
+          let needMore = 5 - queue.length;
+          if (needMore > 0) {
+            mastered.sort(() => Math.random() - 0.5);
+            queue = queue.concat(mastered.slice(0, needMore));
+          }
+        }
+      }
+    }
+    
+  } else if (mode === 'd_new') {
+    let unseen = DB_D.map((_, i) => ({ idx: i, type: 'd' })).filter(x => appData.dMastery[x.idx] === 0);
+    let unmastered = DB_D.map((_, i) => ({ idx: i, type: 'd' })).filter(x => appData.dMastery[x.idx] > 0 && appData.dMastery[x.idx] < 5);
+    let mastered = DB_D.map((_, i) => ({ idx: i, type: 'd' })).filter(x => appData.dMastery[x.idx] === 5);
+    
+    unseen.sort(() => Math.random() - 0.5);
+    if (unseen.length >= 5) {
+      queue = unseen.slice(0, 5);
+    } else {
+      queue = unseen;
+      let need = 5 - queue.length;
+      if (need > 0) {
+        unmastered.sort(() => Math.random() - 0.5);
+        if (unmastered.length >= need) queue = queue.concat(unmastered.slice(0, need));
+        else {
+          queue = queue.concat(unmastered);
+          let needMore = 5 - queue.length;
+          if (needMore > 0) {
+            mastered.sort(() => Math.random() - 0.5);
+            queue = queue.concat(mastered.slice(0, needMore));
+          }
+        }
+      }
+    }
+    
+  } else {
+    // 错题模式
+    let errs = [];
+    appData.pErrors.forEach(i => errs.push({idx:i, type:'p'}));
+    appData.dErrors.forEach(i => errs.push({idx:i, type:'d'}));
+    
+    if (!errs.length) { alert("错题本为空！去挑战新题吧！"); return; }
+    
+    // 如果错题少于5，则重复填充
+    while (errs.length < 5) {
+      errs = errs.concat(errs);
+    }
+    // 截取5题
+    queue = errs.sort(() => Math.random() - 0.5).slice(0, 5);
+  }
+
+  document.getElementById('page-menu').style.display = 'none';
+  document.getElementById('page-game').style.display = 'flex';
+  document.getElementById('modal-end').style.display = 'none';
+  
+  curIdx = 0;
+  score = 0;
+  fixedCount = 0;
+  loadLevel();
+}
+
+function reloadGroup() {
+  document.getElementById('modal-end').style.display = 'none';
+  startGroup(curMode);
+}
+
+function loadLevel() {
+  let task = queue[curIdx];
+  let dbItem = (task.type === 'p') ? DB_P[task.idx] : DB_D[task.idx];
+  
+  document.getElementById('hud-progress').innerText = `${curIdx+1} / 5`;
+  document.getElementById('hud-score').innerText = `本组得分: ${score*20}`;
+  document.getElementById('q-reveal').className = 'q-text'; 
+  document.getElementById('q-reveal').innerText = "";
+  
+  const box = document.getElementById('opt-box');
+  box.innerHTML = '';
+  ['a','b','c'].forEach(k => {
+    if (dbItem[k]) {
+      let d = document.createElement('div');
+      d.className = 'opt';
+      d.innerHTML = `<b>${k.toUpperCase()}.</b> ${dbItem[k]}`;
+      d.onclick = () => check(k.toUpperCase(), d);
+      box.appendChild(d);
+    }
+  });
+
+  lock = false;
+  isFirstTry = true;
+  playCount = 0;
+  updatePlayStatus();
+  
+  playSequence(2);
+}
+
+function playSequence(times) {
+  if (times <= 0) return;
+  speakOne(() => {
+    setTimeout(() => { playSequence(times - 1); }, 1500); 
+  });
+}
+
+function manualPlay() {
+  if (lock) return;
+  playCount++;
+  updatePlayStatus();
+  speakOne(); 
+}
+
+function speakOne(onEndCallback) {
+  window.speechSynthesis.cancel();
+  let task = queue[curIdx];
+  if(!task) return;
+  let dbItem = (task.type === 'p') ? DB_P[task.idx] : DB_D[task.idx];
+  let text = (task.type === 'p') ? dbItem[dbItem.ans.toLowerCase()] : dbItem.q;
+  
+  currentUtterance = new SpeechSynthesisUtterance(text);
+  currentUtterance.lang = 'en-US';
+  currentUtterance.rate = 0.6; 
+  if(onEndCallback) currentUtterance.onend = onEndCallback;
+  window.speechSynthesis.speak(currentUtterance);
+}
+
+function updatePlayStatus() {
+  let el = document.getElementById('play-status');
+  el.innerText = `手动重听: ${playCount}/2`;
+  el.style.color = playCount > 2 ? 'var(--err)' : '#888';
+  if(playCount > 2) el.innerText += " (不熟练)";
+}
+
+function check(pick, el) {
+  if (lock) return;
+  if (el.classList.contains('wrong')) return;
+
+  let task = queue[curIdx];
+  let dbItem = (task.type === 'p') ? DB_P[task.idx] : DB_D[task.idx];
+  
+  if (pick === dbItem.ans) {
+    // 答对
+    lock = true;
+    el.classList.add('correct');
+    
+    if (task.type === 'd') {
+      let r = document.getElementById('q-reveal');
+      r.innerText = dbItem.q;
+      r.classList.add('show');
+    }
+
+    appData.totalCorrect = (appData.totalCorrect || 0) + 1;
+
+    if (isFirstTry && playCount <= 2) {
+      // 完美通关
+      score++;
+      
+      // 熟练度+1
+      if (task.type === 'p') {
+        if(appData.pMastery[task.idx] < 5) appData.pMastery[task.idx]++;
+        // 如果在错题本，移出
+        if(appData.pErrors.includes(task.idx)) {
+          removeFromError('p', task.idx);
+          fixedCount++;
+        }
+      } else {
+        if(appData.dMastery[task.idx] < 5) appData.dMastery[task.idx]++;
+        if(appData.dErrors.includes(task.idx)) {
+          removeFromError('d', task.idx);
+          fixedCount++;
+        }
+      }
+    } else {
+      // 不熟练 -> 进错题本
+      addToError(task.type, task.idx);
+    }
+    
+    save();
+    setTimeout(nextStep, 2500);
+
+  } else {
+    // 答错
+    isFirstTry = false;
+    el.classList.add('wrong');
+    // 进错题本
+    addToError(task.type, task.idx);
+    save();
+  }
+}
+
+function addToError(type, idx) {
+  let list = (type === 'p') ? appData.pErrors : appData.dErrors;
+  if (!list.includes(idx)) list.push(idx);
+}
+function removeFromError(type, idx) {
+  if (type === 'p') appData.pErrors = appData.pErrors.filter(i => i !== idx);
+  else appData.dErrors = appData.dErrors.filter(i => i !== idx);
+}
+
+function nextStep() {
+  curIdx++;
+  if (curIdx < 5) loadLevel();
+  else showEnd();
+}
+
+function showEnd() {
+  document.getElementById('modal-end').style.display = 'flex';
+  document.getElementById('end-score').innerText = score * 20;
+  
+  let t = document.getElementById('end-title');
+  let m = document.getElementById('end-msg');
+  
+  if (score === 5) { 
+    t.innerText = "太棒了！🎉"; t.style.color="var(--ok)"; 
+    m.innerText = "全对通关！继续保持！"; 
+  } else if (score >= 3) { 
+    t.innerText = "加油！💪"; t.style.color="var(--warn)"; 
+    m.innerText = `答对 ${score} 题，还有提升空间！`; 
+  } else { 
+    t.innerText = "别灰心！🛡️"; t.style.color="var(--err)"; 
+    m.innerText = "多听多练，你一定行！"; 
+  }
+  
+  if (curMode === 'mistake') {
+    m.innerText += `\n本次成功攻克了 ${fixedCount} 道错题！`;
+  }
+  
+  // 绑定下一组
+  document.getElementById('btn-next').onclick = () => {
+    reloadGroup();
+  };
+}
+
+function goHome() {
+  document.getElementById('page-game').style.display = 'none';
+  document.getElementById('modal-end').style.display = 'none';
+  document.getElementById('page-menu').style.display = 'flex';
+  updateHome();
+}
+
+function save() { localStorage.setItem('5A_LSN_V81', JSON.stringify(appData)); }
+function resetAll() {
+  if(confirm("确定清空？")) {
+    localStorage.removeItem('5A_LSN_V81');
+    location.reload();
+  }
+}
+
+window.onload = updateHome;
+</script>
+</body>
+</html>

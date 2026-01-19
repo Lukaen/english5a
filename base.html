@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>五上英语期末复习大通关：词汇短语句型</title>
+    <style>
+        :root { --primary: #4CAF50; --secondary: #2196F3; --warning: #ff9800; --danger: #f44336; --bg: #f4f7f9; }
+        body { font-family: sans-serif; background: var(--bg); margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding-bottom: 60px; }
+        .eye-care { background: #fffde7; color: #856404; width: 100%; text-align: center; padding: 8px 0; font-size: 0.75rem; border-bottom: 1px solid #ffeeba; font-weight: bold; position: sticky; top:0; z-index: 1001; }
+        header { background: var(--primary); color: white; width: 100%; text-align: center; padding: 12px 0; font-weight: bold; position: sticky; top:33px; z-index: 1000; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .progress-box { width: 94%; background: #fff; padding: 12px; border-radius: 15px; margin: 10px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.05); box-sizing: border-box; }
+        .p-row { display: flex; align-items: center; gap: 8px; margin: 5px 0; font-size: 0.65rem; }
+        .p-bar-bg { flex: 1; background: #eee; height: 6px; border-radius: 3px; overflow: hidden; }
+        .p-fill { height: 100%; width: 0%; transition: width 0.5s; }
+        #menu-screen { padding: 10px; width: 100%; max-width: 600px; box-sizing: border-box; }
+        .module-selector { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-bottom: 12px; }
+        .m-btn { background: #e2e8f0; text-align: center; padding: 10px; border-radius: 10px; cursor: pointer; font-size: 0.8rem; font-weight: bold; color: #475569; }
+        .m-btn.active { background: var(--secondary); color: white; }
+        .category-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .cat-btn { background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px; cursor: pointer; display: flex; flex-direction: column; align-items: center; position: relative; }
+        .cat-name { font-weight: bold; font-size: 0.85rem; color: #1e293b; margin-bottom: 2px;}
+        .cat-info { font-size: 0.6rem; color: #94a3b8; }
+        .badge { position: absolute; top: -5px; right: -5px; background: var(--danger); color: white; border-radius: 10px; padding: 1px 5px; font-size: 0.6rem; }
+        #game-screen { display: none; width: 100%; flex-direction: column; align-items: center; }
+        .info-bar { background: white; width: 100%; padding: 8px; display: flex; justify-content: space-around; font-size: 0.8rem; border-bottom: 1px solid #e2e8f0; width:100%; position:sticky; top:45px; z-index:900; }
+        .board-zone { width: 100%; max-width: 800px; padding: 5px; box-sizing: border-box; }
+        .zone-label { font-size: 0.65rem; color: #94a3b8; margin: 4px 10px; font-weight: bold; border-left: 3px solid var(--secondary); padding-left: 6px; }
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 5px; }
+        .grid.mid { grid-template-columns: repeat(2, 1fr); }
+        .grid.wide { grid-template-columns: 1fr; }
+        .card { background: #fff; border: 2px solid #e2e8f0; border-radius: 8px; min-height: 55px; display: flex; justify-content: center; align-items: center; text-align: center; padding: 6px; cursor: pointer; font-weight: bold; font-size: 0.8rem; transition: 0.1s; user-select: none; position: relative; box-shadow: 0 1px 2px rgba(0,0,0,0.05); word-break: break-word; }
+        .card.selected { border-color: var(--secondary); background: #eff6ff; color: var(--secondary); }
+        .card.matched { visibility: hidden; opacity: 0; pointer-events: none; }
+        .card.error { border-color: var(--danger); background: #fff5f5; animation: shake 0.3s; }
+        @keyframes shake { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-3px);} 75%{transform:translateX(3px);} }
+        .m-dots { position: absolute; bottom: 2px; right: 2px; display: flex; gap: 1px; }
+        .dot { width: 3px; height: 3px; border-radius: 50%; background: #ddd; }
+        .dot.active { background: var(--primary); }
+        #modal, #health-modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); text-align: center; z-index: 3000; width: 85%; max-width: 320px; }
+        .btn-ui { background: var(--primary); color: white; border: none; padding: 12px; border-radius: 25px; cursor: pointer; margin-top: 8px; width: 100%; font-size: 0.9rem; font-weight: bold; }
+    </style>
+</head>
+<body>
+<div class="eye-care">👀 护眼提醒：坐姿挺直，距离屏幕一尺远，保护视力！</div>
+<header>5A英语：词汇句型全掌握</header>
+<div id="menu-screen">
+    <div class="progress-box">
+        <div class="p-row"><span>中英单词:</span><div class="p-bar-bg"><div id="bar-word-ch" class="p-fill" style="background:#4CAF50"></div></div><b id="txt-word-ch">0/167</b></div>
+        <div class="p-row"><span>英英释义:</span><div class="p-bar-bg"><div id="bar-word-en" class="p-fill" style="background:#2196F3"></div></div><b id="txt-word-en">0/167</b></div>
+        <div class="p-row"><span>重点短语:</span><div class="p-bar-bg"><div id="bar-phrase" class="p-fill" style="background:#ff9800"></div></div><b id="txt-phrase">0/0</b></div>
+        <div class="p-row"><span>核心句型:</span><div class="p-bar-bg"><div id="bar-sentence" class="p-fill" style="background:#9c27b0"></div></div><b id="txt-sentence">0/0</b></div>
+    </div>
+    <div class="module-selector">
+        <div id="m-word-ch" class="m-btn active" onclick="setMod('word-ch')">中英单词</div>
+        <div id="m-word-en" class="m-btn" onclick="setMod('word-en')">英英解释</div>
+        <div id="m-phrase" class="m-btn" onclick="setMod('phrase')">短语配对</div>
+        <div id="m-sentence" class="m-btn" onclick="setMod('sentence')">句型挑战</div>
+    </div>
+    <div class="category-grid" id="category-btns"></div>
+</div>
+<div id="game-screen">
+    <div class="info-bar"><span><b id="cur-cat-name"></b></span><span>⏱️ <b id="timer-val">0</b>s</span></div>
+    <div class="board-zone"><div class="zone-label">ENGLISH 英文 (点击发音)</div><div id="board-top" class="grid"></div></div>
+    <div class="board-zone"><div class="zone-label">MEANING 含义解析</div><div id="board-bottom" class="grid"></div></div>
+    <button class="btn-ui" style="background:#94a3b8; width:90%; margin:20px 5%;" onclick="showMenu()">返回目录</button>
+</div>
+<div id="modal">
+    <h3>🎊 挑战成功！</h3>
+    <div id="report-html" style="text-align:left; background:#f8fafc; padding:12px; border-radius:12px; margin:15px 0; font-size:0.8rem;"></div>
+    <button class="btn-ui" onclick="initLevel()">换一组继续</button>
+    <button class="btn-ui" style="background:#94a3b8" onclick="showMenu()">返回主目录</button>
+</div>
+<div id="health-modal"><h3 style="color:var(--warning);">👀 视力保护提醒</h3><div id="health-content" style="font-size:0.85rem; margin:15px 0;"></div><button class="btn-ui" onclick="closeH()">已远眺休息</button></div>
+
+<script>
+// --- 此处待粘贴 B 部分逻辑与庞大数据集 ---// --- 完整数据加载 ---
+const rawData = [["ice cream","冰激凌","A cold and sweet food.","饮食"],["rice","米饭","People eat it every day in China.","饮食"],["dumpling","饺子","A traditional(传统的) Chinese food.","饮食"],["noodle","面条","Long and thin food.","饮食"],["bread","面包","Use it to make a sandwich.","饮食"],["sandwich","三明治","Bread with meat inside.","饮食"],["hamburger","汉堡包","Round bread with beef(牛肉).","饮食"],["chips","炸薯条","Fried(油炸的) potatoes.","饮食"],["starter","第一道菜","The first dish(菜肴) in a meal.","饮食"],["tomato","西红柿","A red and round vegetable.","饮食"],["egg","鸡蛋","It comes from a hen(母鸡).","饮食"],["soup","汤","Hot water with meat or vegetables.","饮食"],["main course","主菜","The most important food in a meal.","饮食"],["meat","肉","Food from animals.","饮食"],["vegetable","蔬菜","Healthy food like carrot.","饮食"],["potato","马铃薯","A vegetable used to make chips.","饮食"],["dessert","甜品","Sweet food after a meal.","饮食"],["chocolate","巧克力","A sweet and brown food.","饮食"],["dimsum","点心","Traditional(传统的) food in GZ.","饮食"],["pancake","薄饼","A flat(平的) and round cake.","饮食"],["bun","馒头/小圆面包","Small and round bread.","饮食"],["salad","色拉","Mixed(混合的) vegetables or fruit.","饮食"],["steak","牛排","A big piece of beef(牛肉).","饮食"],["coffee","咖啡","A brown and bitter(苦的) drink.","饮具"],["tea","茶","A healthy drink made with leaves(叶子).","饮具"],["milk","牛奶","A white drink from cows(奶牛).","饮具"],["coke","可乐","A sweet and black drink.","饮具"],["juice","果汁","A drink from fruit.","饮具"],["drink","饮料","Something you can drink.","饮具"],["cup","杯子","You use it to drink tea.","饮具"],["bottle","瓶子","Put water or juice in it.","饮具"],["glass","玻璃杯","A cup made of glass.","饮具"],["can","罐子","A metal(金属) box for drinks.","饮具"],["chopstick","筷子","Sticks for eating Chinese food.","饮具"],["bowl","碗","You put soup or rice in it.","饮具"],["plate","盘子","You put food on this flat thing.","饮具"],["knife","刀","Use it to cut(切) things.","饮具"],["fork","叉子","Use it to pick up(叉起) food.","饮具"],["weekday","工作日","Monday to Friday.","时空"],["weekend","周末","Saturday and Sunday.","时空"],["some day","某天","One day in the future.","时空"],["season","季节","Spring, summer, autumn or winter.","时空"],["lunchtime","午餐时","The time to eat lunch.","时空"],["p.m.","下午","After 12:00 in the daytime.","时空"],["life","生活","The way a person lives.","时空"],["country","国家","Like China or England.","时空"],["place","地方","Where someone is.","时空"],["market","市场","A place to buy food.","时空"],["palace","宫殿","House for a king or queen.","时空"],["Children’s Palace","少年宫","Place for kids to learn.","时空"],["cinema","电影院","A place to watch films.","时空"],["England","英国","A country in Europe(欧洲).","时空"],["sky","天空","It is above(在...上方) the earth.","自然"],["animal","动物","A living thing like a dog.","自然"],["weather","天气","Like sun, rain or wind.","自然"],["cloud","云","A white thing in the sky.","自然"],["cloudy","多云","When there are many clouds.","自然"],["rain","雨","Water from the sky.","自然"],["rainy","下雨","When it rains a lot.","自然"],["wet","湿的","Not dry.","自然"],["dry","干的","Not wet.","自然"],["sun","太阳","It gives us light and heat.","自然"],["sunny","晴朗","When the sun is shining.","自然"],["warm","温暖","A nice hot feeling.","自然"],["cool","凉爽","A nice cold feeling.","自然"],["snow","雪","White and cold in winter.","自然"],["snowy","雪天","When it snows.","自然"],["snowman","雪人","A man made of snow.","自然"],["temperature","温度","How hot or cold it is.","自然"],["degree","度","A unit for temperature.","自然"],["wind","风","Moving air.","自然"],["windy","有风","When the wind blows.","自然"],["hobby","爱好","What you do for fun.","描述"],["model","模型","A small copy of a big thing.","描述"],["collect","收集","To find and keep things.","描述"],["stamp","邮票","Small paper for a letter.","描述"],["drawing","画","A picture made with a pen.","描述"],["ability","能力","Something you can do.","描述"],["coloured","彩色的","Having many colours.","描述"],["different","不同","Not the same.","描述"],["fresh","新鲜","New and clean.","描述"],["healthy","健康","Good for your body.","描述"],["hungry","饿的","You want to eat food.","描述"],["delicious","美味","Food that tastes very good.","描述"],["terrible","糟糕","Very bad.","描述"],["true","真实","Not false.","描述"],["umbrella","雨伞","Keep you dry in the rain.","描述"],["talk","谈话","To speak to someone.","动作"],["speak","讲话","To say words.","动作"],["say","说","To speak something.","动作"],["ask","问","To want to know.","动作"],["smell","闻","To use your nose.","动作"],["taste","尝","To use your mouth.","动作"],["keep","保持","To have for a long time.","动作"],["count","数数","To say 1, 2, 3...","动作"],["find","找到","To get after looking.","动作"],["look for","寻找","To try to find.","动作"],["wake up","醒来","To stop sleeping.","动作"],["stay","停留","Not to go away.","动作"],["wait","等待","Stay until it happens.","动作"],["put on","穿上","To wear clothes.","动作"],["change","改变","To make different.","动作"],["turn","转","To move in a circle.","动作"],["shine","照耀","To give off light.","动作"],["walk","走路","To move on your feet.","动作"],["said","说(过)","Past of 'say'.","过去"],["went","去(过)","Past of 'go'.","过去"],["had","有(过)","Past of 'have'.","过去"],["thought","想(过)","Past of 'think'.","过去"],["more than","多于","Over a number.","词组"],["plenty of","大量","A lot of.","词组"],["for example","例如","Show one of many things.","词组"],["a cup of","一杯","Tea in a cup.","词组"],["a bottle of","一瓶","Juice in a bottle.","词组"],["seldom","极少","Not often.","词组"],["often","经常","Many times.","词组"],["usually","通常","In most times.","词组"],["quite","相当","Very or really.","词组"],["maybe","可能","Perhaps.","词组"],["together","一起","With each other.","词组"],["have fun","娱乐","Be happy and play.","词组"],["than","比","Used to compare things.","其他"],["more","更多","A larger number.","其他"],["every","每","Each one.","其他"],["during","期间","From start to end.","其他"],["Mrs","太太","A married woman.","其他"],["son","儿子","A boy child.","其他"],["everyone","所有人","All the people.","其他"],["something","某物","A thing.","其他"],["yours","你的","Belonging to you.","其他"],["example","例子","Shows a rule.","其他"],["report","报告","Tell about something.","其他"],["both","两者都","Two things together.","其他"],["should","应该","Good to do.","其他"],["shouldn't","不应该","Not good to do.","其他"],["hope","希望","Want something to happen.","其他"],["need","需要","Must have it.","其他"],["come on","来吧","Hurry up.","其他"],["first","第一","Number one.","其他"],["sweet","甜","Sugar tastes like this.","其他"],["salty","咸","Salt tastes like this.","其他"],["sour","酸","Lemon tastes like this.","其他"],["western","西方","From UK or USA.","其他"],["most","多数","Nearly all.","其他"],["also","也","Too.","其他"],["again","再","One more time.","其他"],["warm","温暖","Nice, hot feeling.","其他"],["cool","凉爽","Nice, cold feeling.","其他"],["cold","冷","Like ice or winter.","其他"],["hot","热","Like fire or summer.","其他"],["busy","忙","A lot of work.","其他"],["far","远","Not near.","其他"],["sure","确信","100% true.","其他"],["dear","亲爱","Someone you love.","其他"],["early","早","Before usual time.","其他"],["quickly","迅速","Very fast.","其他"],["away","离开","To a different place.","其他"],["outside","外面","Not inside.","其他"],["hard","努力/猛烈","With a lot of power.","其他"],["before","之前","Earlier than.","其他"],["start","开始","To begin.","其他"],["finish","完成","To end.","其他"],["talking","会说","Able to speak.","其他"],["uh","唔","Sound when thinking.","其他"]];
+
+const phraseData = [
+["make model ships","做轮船模型","","M1"],["love making","喜欢制作","","M1"],["more than 20 ships","超过 20 艘轮船","","M1"],["collect stamps","集邮","","M1"],["keep pets","养宠物","","M1"],["three birds","三只鸟","","M1"],["play music","玩音乐","","M1"],["every day","每天","","M1"],["read books","读书","","M1"],["every night","每天晚上","","M1"],["play computer games","玩电脑游戏","","M1"],["take photos","照相","","M1"],["during my holiday","在我的假期里","","M1"],["a great painter","一个伟大的画家","","M1"],["draw cartoons","画漫画","","M1"],["coloured pencils","彩色铅笔","","M1"],["his pet dog","他的宠物狗","","M1"],["birthday cards","生日卡片","","M1"],["on their birthday","在他们的生日","","M1"],["in the sky","在天空中","","M1"],["interesting people","有趣的人物","","M1"],["beautiful places","美丽的风景","","M1"],["in every room","在每个房间","","M1"],["in her house","在她的房子里","","M1"],["be good at drawing","擅长画画","","M2"],["draws very well","画得很好","","M2"],["read fast","读得快","","M2"],["jump high","跳得高","","M2"],["jump far","跳得远","","M2"],["run fast","跑得快","","M2"],["sing well","唱得好","","M2"],["dance well","跳舞跳得好","","M2"],["happy birthday","生日快乐","","M2"],["be here to help you","在这里帮助你","","M2"],["talking robot","会说话的机器人","","M2"],["speak English","说英语","","M2"],["be good at many things","擅长很多东西","","M2"],["clean very well","打扫得很干净","","M2"],["write Chinese and English","写汉字和英文","","M2"],["wants to talk with him","想和他谈话","","M3"],["at the swimming pool","在游泳池里","","M3"],["find him","找到他","","M3"],["go swimming","去游泳","","M3"],["on weekdays","在工作日","","M3"],["at the library","在图书馆","","M3"],["in the music room","在音乐室","","M3"],["look for him","寻找他","","M3"],["in the gym","在体育馆","","M3"],["take exercise","参加锻炼","","M3"],["in the classroom","在教室里","","M3"],["do one's homework","做家庭作业","","M3"],["eat ice cream","吃冰淇淋","","M3"],["at the school shop","在学校商店里","","M3"],["at the weekend","在周末","","M3"],["wake up","醒来","","M3"],["have a big breakfast","吃一顿丰盛的早餐","","M3"],["on Saturday","在周六","","M3"],["have a swimming lesson","上一堂游泳课","","M3"],["go out for lunch","出去吃午饭","","M3"],["have some fun","娱乐","","M3"],["go to the cinema","去看电影","","M3"],["stay at home","呆在家里","","M3"],["drink...for lunch","午餐喝...","","M4"],["tea with milk","奶茶","","M4"],["a bottle of juice","一瓶果汁","","M4"],["a glass of water","一杯水","","M4"],["a box of milk","一盒牛奶","","M4"],["a cup of tea","一杯茶","","M4"],["a can of coke","一罐可乐","","M4"],["tomato and egg soup","西红柿鸡蛋汤","","M4"],["have...for dinner","晚餐吃...","","M4"],["like to eat rice","喜欢吃米饭","","M4"],["eat soup","喝汤","","M4"],["worry too much","太操心","","M4"],["for starters","作为头盘","","M4"],["start cooking","开始煮饭","","M4"],["time for lunch","吃午餐时间","","M5"],["try the chicken first","先尝尝鸡肉","","M5"],["think of","觉得/认为","","M5"],["so many things to try","太多尝试的东西","","M5"],["look fresh","看起来很新鲜","","M5"],["very sweet","很甜","","M5"],["look quite good","看起来很好","","M5"],["smell delicious","闻起来很香","","M5"],["tastes good","味道很好","","M5"],["different tastes","不同口味","","M5"],["very different","很不同","","M5"],["in the West","在西方","","M5"],["on a plate","在碟子上","","M5"],["with a knife and fork","用刀和叉","","M5"],["in Beijing","在北京","","M5"],["salty food","咸的食物","","M5"],["hot food","辣的食物","","M5"],["so cloudy","太多云","","M6"],["in April","在四月","","M6"],["in England","在英国","","M6"],["play outdoors","在户外玩耍","","M6"],["visit England","游览英国","","M6"],["wear T-shirts","穿T恤衫","","M6"],["hot and dry","又热又干燥","","M6"],["eat lots of fruit","吃很多水果","","M6"],["fly kites","放风筝","","M6"],["make a snowman","堆雪人","","M6"],["my first day","我的第一天","","M6"],["something interesting","一些有趣的事情","","M6"],["lots of clothes","很多衣服","","M6"],["start to shine","开始照耀","","M6"],["at lunchtime","在午餐时间","","M6"],["rain hard","下大雨","","M6"],["in one day","在某一天","","M6"]
+];
+
+const sentData = [
+["What are you doing, Jiamin?","Jiamin, 你在做什么？","","句型"],["I'm making a model plane.","我正在做飞机模型。","","句型"],["I love making models.","我喜欢做模型。","","句型"],["What's your hobby, Xiaoling?","你的爱好是什么，Xiaoling？","","句型"],["My hobby is keeping pets.","我的爱好是养宠物。","","句型"],["His hobby is drawing cartoons.","他的爱好是画漫画。","","句型"],["Sometimes he draws his pet dog.","有时候他画他的宠物狗。","","句型"],["She likes drawing interesting people.","她喜欢画有趣的人物。","","句型"],["She draws very well, too.","她也画得很好。","","句型"],["I love swimming, too.","我也喜欢游泳。","","句型"],["Happy birthday to you!","祝你生日快乐！","","句型"],["What can you do?","你会做什么？","","句型"],["I can do many things.","我会做很多事情。","","句型"],["Can you clean the room?","你会打扫房间吗？","","句型"],["Can you do my homework?","你会做我的家庭作业吗？","","句型"],["Of course I can.","我当然会。","","句型"],["Where is Ben?","Ben 在哪里？","","句型"],["He is at the swimming pool.","他在游泳池里。","","句型"],["He never goes swimming on weekdays.","他从不在工作日去游泳。","","句型"],["Does Ben often go swimming?","Ben 经常去游泳吗？","","句型"],["Let me go and look for him there.","我去那里找找他吧。","","句型"],["The Chen family is always busy.","陈家人在周末总是很忙。","","句型"],["Mrs Chen goes to the market.","陈太太通常和陈先生去市场。","","句型"],["Their son goes to the Palace.","他们的儿子周六去少年宫。","","句型"],["What do you want to drink?","午餐你想喝什么？","","句型"],["I want a cup of tea.","我想我要喝一杯奶茶。","","句型"],["Do you want coffee or tea?","你要咖啡还是茶？","","句型"],["Can I have a large coke?","请问，我能喝大杯可乐吗？","","句型"],["Here you are. Thanks a lot.","给你。多谢了。","","句型"],["What should we have for dinner?","晚餐我们要吃什么？","","句型"],["We should have rice and fish.","我们吃米饭和鱼。","","句型"],["Let's start cooking. OK.","我们开始做饭吧。好吧。","","句型"],["What do you think of the fish?","你觉得鱼的味道怎么样？","","句型"],["Chinese people like rice.","中国人喜欢吃米饭或面条。","","句型"],["Western people eat bread.","西方人吃面包。","","句型"],["People eat on a plate.","人们通常用刀叉在碟子里吃饭。","","句型"],["People enjoy sweet and sour food.","来自广州的人最喜欢甜酸味。","","句型"],["What's the weather like today?","今天的天气怎么样？","","句型"],["How is the weather on October?","十月的天气怎么样？","","句型"],["I hope I can visit England.","我希望某一天能游览英国。","","句型"],["The report said it was 15C.","天气预报说气温只有15度。","","句型"],["I put on my coat and walked.","我穿上大衣，走路回家去了。","","句型"]
+];
+
+let curMod = 'word-ch', stats = JSON.parse(localStorage.getItem('5A_V21_VOC')) || {'word-ch':{},'word-en':{},'phrase':{},'sentence':{}};
+let sessS = Date.now(), cumul = parseInt(localStorage.getItem('5A_C_T')) || 0;
+let first=null, second=null, lock=false, done=0, timer=0, clock=null, curCat="", tC=0, rC=0;
+
+const getDb = () => curMod.startsWith('word')?rawData:(curMod==='phrase'?phraseData:sentData);
+const speak = (t) => { if(!window.speechSynthesis)return; window.speechSynthesis.cancel(); let m=new SpeechSynthesisUtterance(t); m.lang='en-US'; m.rate=0.8; window.speechSynthesis.speak(m); };
+
+function setMod(m){ curMod=m; document.querySelectorAll('.m-btn').forEach(b=>b.classList.toggle('active',b.id==='m-'+m)); showMenu(); }
+
+function showMenu(){
+    document.getElementById('menu-screen').style.display='block'; document.getElementById('game-screen').style.display='none'; document.getElementById('modal').style.display='none';
+    [['word-ch',rawData,'word-ch'],['word-en',rawData,'word-en'],['phrase',phraseData,'phrase'],['sentence',sentData,'sentence']].forEach(c=>{
+        let mCount=c[1].filter(i=>stats[c[0]][i[0]]?.m).length;
+        document.getElementById('bar-'+c[2]).style.width=(mCount/c[1].length*100)+'%';
+        document.getElementById('txt-'+c[2]).innerText=mCount+'/'+c[1].length;
+    });
+    const grid=document.getElementById('category-btns'); grid.innerHTML='';
+    const db=getDb(), cats=[...new Set(db.map(i=>i[3]))], s=stats[curMod];
+    cats.forEach(c=>{
+        let list=db.filter(i=>i[3]===c), m=list.filter(i=>s[i[0]]?.m).length;
+        let btn=document.createElement('div'); btn.className='cat-btn';
+        btn.innerHTML=`<span class="cat-name">${c}</span><span class="cat-info">${m}/${list.length} 通关</span>`;
+        btn.onclick=()=>{curCat=c; initLevel();}; grid.appendChild(btn);
+    });
+    let msk=Object.keys(s).filter(k=>!s[k].m && (s[k].e||[]).length>0);
+    if(msk.length>0){
+        let btn=document.createElement('div'); btn.className='cat-btn'; btn.style.borderColor='var(--warning)';
+        btn.innerHTML=`<span class="cat-name" style="color:var(--warning)">错题特训</span><span class="cat-info">${msk.length}词</span><div class="badge">${msk.length}</div>`;
+        btn.onclick=()=>{curCat="错题"; initLevel();}; grid.appendChild(btn);
+    }
+}
+
+function initLevel(){
+    document.getElementById('menu-screen').style.display='none'; document.getElementById('game-screen').style.display='flex'; document.getElementById('modal').style.display='none';
+    document.getElementById('cur-cat-name').innerText=curCat;
+    const bT=document.getElementById('board-top'), bB=document.getElementById('board-bottom');
+    bT.innerHTML=''; bB.innerHTML=''; clearInterval(clock); timer=0; done=0; tC=0; rC=0; clock=null;
+    document.getElementById('timer-val').innerText='0';
+    bT.className=bB.className=(curMod==='sentence'?'grid wide':(curMod==='phrase'?'grid mid':'grid'));
+    const db=getDb(), s=stats[curMod];
+    let pool=(curCat==='错题')?db.filter(i=>!s[i[0]]?.m && s[i[0]]?.e?.length>0):db.filter(i=>i[3]===curCat).sort((a,b)=>(s[a[0]]?.m?1:0)-(s[b[0]]?.m?1:0));
+    let display=pool.slice(0, (curMod==='sentence'?4:6));
+    let topD=display.map((p,i)=>({t:p[0],id:i,wk:p[0]})), botD=display.map((p,i)=>({t:(curMod==='word-en'?p[2]:p[1]),id:i,wk:p[0]}));
+    topD.sort(()=>Math.random()-0.5); botD.sort(()=>Math.random()-0.5);
+    topD.forEach(d=>{
+        let div=document.createElement('div'); div.className='card'; div.innerText=d.t;
+        let info=s[d.wk]; if(info && !info.m && info.e?.length>0){
+            let dots='<div class="m-dots">'; for(let i=0;i<5;i++)dots+=`<div class="dot ${i<info.s?'active':''}"></div>`; div.innerHTML+=dots+'</div>';
+        }
+        div.onclick=()=>{speak(d.t); handle(div,d.id,d.wk,display.length);}; bT.appendChild(div);
+    });
+    botD.forEach(d=>{
+        let div=document.createElement('div'); div.className='card'; div.innerText=d.t;
+        div.onclick=()=>{handle(div,d.id,d.wk,display.length);}; bB.appendChild(div);
+    });
+}
+
+function handle(div,id,wk,totalInRound){
+    if(lock||div.classList.contains('matched')||div.classList.contains('selected'))return;
+    if(!clock) clock=setInterval(()=>{timer++;document.getElementById('timer-val').innerText=timer;},1000);
+    tC++; div.classList.add('selected');
+    if(!first){first=div; first.mId=id; first.wk=wk; return;}
+    second=div; lock=true;
+    let s=stats[curMod];
+    if(first.mId===id){
+        rC+=2; if(!s[wk]) s[wk]={m:false,s:0,e:[]};
+        if(s[wk].e.length===0){s[wk].m=true; s[wk].s=5;}
+        else{s[wk].s++; if(s[wk].s>=5) s[wk].m=true;}
+        setTimeout(()=>{
+            first.classList.add('matched'); second.classList.add('matched');
+            done++; if(done===totalInRound) finish();
+            first=null; second=null; lock=false;
+        },300);
+    } else {
+        [first.wk,wk].forEach(k=>{ if(!s[k])s[k]={m:false,s:0,e:[]}; s[k].m=false; s[k].s=0; s[k].e.push(Date.now());});
+        first.classList.add('error'); second.classList.add('error');
+        setTimeout(()=>{first.classList.remove('selected','error'); second.classList.remove('selected','error'); first=null; second=null; lock=false;},700);
+    }
+    localStorage.setItem('5A_V21_VOC', JSON.stringify(stats));
+}
+
+function finish(){
+    clearInterval(clock); clock=null;
+    document.getElementById('report-html').innerHTML=`用时: <b>${timer}s</b><br>准确率: <b>${Math.floor(rC/tC*100)}%</b>`;
+    document.getElementById('modal').style.display='block';
+}
+
+setInterval(()=>{
+    cumul++; localStorage.setItem('5A_C_T', cumul);
+    let sM = Math.floor((Date.now()-sessS)/60000);
+    if(sM>0 && sM%15===0) alertH("你已经连续学习15分钟了！抬头远眺远处放松下。");
+    if(cumul>0 && cumul%60===0) alertH("今日累计学习已满60分钟。请强制休息15分钟。");
+},60000);
+
+function alertH(m){ document.getElementById('health-content').innerHTML=m; document.getElementById('health-modal').style.display='block';}
+function closeH(){ document.getElementById('health-modal').style.display='none';}
+
+showMenu();
+</script>
+</body>
+</html>

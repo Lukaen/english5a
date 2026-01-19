@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>5A英语：听写王者 V51 - 版权归luka所有</title>
+    <style>
+        :root { --primary: #2196F3; --correct: #4CAF50; --wrong: #F44336; --warning: #FF9800; --bg: #e1f5fe; --lvl1: #4caf50; --lvl2: #ff9800; --lvl3: #9c27b0; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; overflow-x: hidden; padding-bottom: 80px; }
+        .eye-care { background: #fffde7; color: #856404; width: 100%; text-align: center; padding: 8px 0; font-size: 0.75rem; border-bottom: 1px solid #ffeeba; font-weight: bold; position: sticky; top:0; z-index: 1001; }
+        header { background: var(--primary); color: white; width: 100%; text-align: center; padding: 12px 0; font-weight: bold; position: sticky; top:33px; z-index: 1000; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        
+        .progress-box { width: 94%; background: #fff; padding: 15px; border-radius: 15px; margin: 10px 0; box-shadow: 0 4px 10px rgba(0,0,0,0.05); box-sizing: border-box;}
+        .p-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 0.7rem; font-weight: bold; }
+        .p-bar-bg { flex: 1; background: #eee; height: 10px; border-radius: 5px; overflow: hidden; }
+        .p-fill { height: 100%; width: 0%; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+        
+        #menu-screen { padding: 10px; width: 100%; max-width: 600px; box-sizing: border-box; }
+        .lvl-selector { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 15px; }
+        .lvl-btn { background: #fff; border: 2px solid #b3e5fc; padding: 12px 5px; border-radius: 12px; cursor: pointer; font-size: 0.8rem; font-weight: bold; color: #546e7a; text-align: center; transition: 0.1s; }
+        .lvl-btn.active { border-color: var(--primary); background: #e3f2fd; color: var(--primary); transform: scale(1.05); }
+        
+        .category-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .cat-btn { background: white; border: 1px solid #b3e5fc; border-radius: 15px; padding: 15px; cursor: pointer; display: flex; flex-direction: column; align-items: center; position: relative; }
+        .cat-name { font-weight: bold; font-size: 0.9rem; color: #01579b; }
+        .badge { position: absolute; top: -5px; right: -5px; background: var(--wrong); color: white; border-radius: 10px; padding: 2px 6px; font-size: 0.6rem; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        
+        #game-screen { display: none; width: 100%; flex-direction: column; align-items: center; max-width: 600px; }
+        .word-card { background: #fff; width: 92%; border-radius: 20px; padding: 40px 10px; margin-top: 20px; box-shadow: 0 8px 25px rgba(0,0,0,0.08); text-align: center; position: relative; }
+        .hint-zh { font-size: 1.4rem; color: #37474f; margin-bottom: 25px; font-weight: bold; }
+        .spell-zone { font-family: 'Courier New', monospace; font-size: 2.6rem; color: #263238; min-height: 60px; display: flex; justify-content: center; flex-wrap: wrap; gap: 6px; }
+        .letter { border-bottom: 3px solid #cfd8dc; min-width: 32px; display: inline-block; position: relative; height: 50px; line-height: 50px; }
+        .letter.pre { border-bottom: none; color: #b0bec5; } 
+        .letter.active { border-bottom-color: var(--primary); }
+        .letter.active::after { content: ""; position: absolute; left: 50%; bottom: -3px; width: 100%; height: 3px; background: var(--primary); transform: translateX(-50%); animation: blink 1s infinite; }
+        .letter.ok { border-bottom-color: var(--correct); color: var(--correct); font-weight: bold; }
+        .letter.err { border-bottom-color: var(--wrong); color: var(--wrong); animation: shake 0.3s; }
+        .letter.h-show { color: var(--warning); opacity: 0.5; font-weight: bold; } 
+        @keyframes shake { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-5px);} 75%{transform:translateX(5px);} }
+        .streak-hint { font-size: 0.85rem; color: var(--warning); font-weight: bold; margin-bottom: 15px; display: block; background: #fff3e0; padding: 5px 10px; border-radius: 20px; }
+        
+        /* 版权水印样式 */
+        .copyright-footer { position: fixed; bottom: 0; width: 100%; text-align: center; padding: 10px 0; background: rgba(255,255,255,0.8); font-size: 0.7rem; color: #90a4ae; border-top: 1px solid #e1f5fe; z-index: 2000; letter-spacing: 1px; }
+        
+        #hidden-input { position: absolute; opacity: 0; pointer-events: none; top: -100px; }
+        #modal, #print-modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 25px; border-radius: 24px; box-shadow: 0 20px 60px rgba(0,0,0,0.4); text-align: center; z-index: 3000; width: 85%; max-width: 420px; }
+        .btn-ui { background: var(--primary); color: white; border: none; padding: 14px; border-radius: 30px; cursor: pointer; margin-top: 10px; width: 100%; font-size: 1rem; font-weight: bold; }
+        #print-content { text-align: left; max-height: 400px; overflow-y: auto; margin: 15px 0; font-size: 0.85rem; }
+        .print-row { border-bottom: 1px dashed #ddd; padding: 10px 0; display: flex; justify-content: space-between; }
+        @media print { body * { visibility: hidden; } #print-area, #print-area * { visibility: visible; } #print-area { position: absolute; left: 0; top: 0; width: 100%; background: white; } }
+    </style>
+</head>
+<body onclick="focusInput()">
+<div class="eye-care">👀 坐姿提醒：挺直背部。听音写词，分层计分！</div>
+<header>5A 英语听写通关王 V51</header>
+
+<div id="menu-screen">
+    <div class="progress-box">
+        <div class="p-row" style="color:var(--lvl1)"><span>🟢 初级进度</span><div class="p-bar-bg"><div id="bar-1" class="p-fill" style="background:var(--lvl1)"></div></div><b id="txt-1">0/167</b></div>
+        <div class="p-row" style="color:var(--lvl2)"><span>🟠 中级进度</span><div class="p-bar-bg"><div id="bar-2" class="p-fill" style="background:var(--lvl2)"></div></div><b id="txt-2">0/167</b></div>
+        <div class="p-row" style="color:var(--lvl3)"><span>🟣 高级进度</span><div class="p-bar-bg"><div id="bar-3" class="p-fill" style="background:var(--lvl3)"></div></div><b id="txt-3">0/167</b></div>
+        <button class="btn-ui" style="background: #607d8b; padding: 8px; font-size: 0.8rem;" onclick="showPrintModal()">📋 打印错题清单</button>
+    </div>
+    <div class="lvl-selector">
+        <div class="lvl-btn active" id="btn-lvl-1" onclick="changeLvl(1, event)">初级模式</div>
+        <div class="lvl-btn" id="btn-lvl-2" onclick="changeLvl(2, event)">中级模式</div>
+        <div class="lvl-btn" id="btn-lvl-3" onclick="changeLvl(3, event)">高级模式</div>
+    </div>
+    <div class="category-grid" id="category-btns"></div>
+</div>
+
+<div id="game-screen">
+    <div class="word-card">
+        <div id="streak-text" class="streak-hint" style="display:none;"></div>
+        <div class="hint-zh" id="hint-text">载入中...</div>
+        <div class="spell-zone" id="spell-area"></div>
+        <div style="margin-top: 30px;"><button class="btn-ui" style="width: auto; padding: 10px 25px; background: #81d4fa;" onclick="speakNow(event)">🔈 重听读音</button></div>
+        <input type="text" id="hidden-input" autocomplete="off">
+    </div>
+    <button class="btn-ui" style="background:#94a3b8; width:90%; margin-top:40px;" onclick="showMenu()">返回主目录</button>
+</div>
+
+<div class="copyright-footer">Copyright © 版权归luka所有</div>
+
+<div id="print-modal">
+    <h3>📕 分类强化复习清单</h3>
+    <div id="print-content"></div>
+    <div style="display:flex; gap:10px;">
+        <button class="btn-ui" style="background:var(--correct)" onclick="window.print()">🖨️ 打印</button>
+        <button class="btn-ui" style="background:#94a3b8" onclick="closePrint()">关闭</button>
+    </div>
+</div>
+
+<div id="modal">
+    <h3 id="modal-title">🎊 挑战成功！</h3>
+    <div id="report-html" style="margin:15px 0; font-size:1rem; color:#546e7a; line-height:1.5;"></div>
+    <div style="font-size:0.6rem; color:#ccc; margin-bottom:10px;">开发者：luka</div>
+    <button class="btn-ui" id="btn-m-next" onclick="initLevel()">继续挑战</button>
+    <button class="btn-ui" style="background:#94a3b8" onclick="showMenu()">返回目录</button>
+</div>
+<div id="print-area" style="display:none; padding:20px;"></div>
+
+<script>
+/**
+ * 核心逻辑由 luka 研发
+ * 包含： Phonics 音节切分、三级独立统计、错题即时累计等功能
+ */
+let audioCtx = null;
+const playSFX = (type) => {
+    try { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.connect(gain); gain.connect(audioCtx.destination);
+        if (type === 'ok') { osc.type = 'sine'; osc.frequency.setValueAtTime(880, audioCtx.currentTime); gain.gain.setValueAtTime(0.05, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15); } 
+        else if (type === 'err') { osc.type = 'sawtooth'; osc.frequency.setValueAtTime(150, audioCtx.currentTime); gain.gain.setValueAtTime(0.05, audioCtx.currentTime); gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.2); } 
+        else { osc.type = 'triangle'; osc.frequency.setValueAtTime(440, audioCtx.currentTime); osc.frequency.linearRampToValueAtTime(880, audioCtx.currentTime + 0.2); gain.gain.setValueAtTime(0.05, audioCtx.currentTime); }
+        osc.start(); osc.stop(audioCtx.currentTime + 0.2);
+    } catch(e) {}
+};
+
+const dbWords = [
+    ["ice cream","冰激凌","饮食"],["rice","米饭","饮食"],["dumpling","饺子","饮食"],["noodle","面条","饮食"],["bread","面包","饮食"],["sandwich","三明治","饮食"],["hamburger","汉堡包","饮食"],["chips","炸薯条","饮食"],["starter","第一道菜","饮食"],["tomato","西红柿","饮食"],["egg","鸡蛋","饮食"],["soup","汤","饮食"],["main course","主菜","饮食"],["meat","肉","饮食"],["vegetable","蔬菜","饮食"],["potato","马铃薯","饮食"],["dessert","甜品","饮食"],["chocolate","巧克力","饮食"],["dimsum","点心","饮食"],["pancake","薄饼","饮食"],["bun","馒头","饮食"],["salad","色拉","饮食"],["steak","牛排","饮食"],
+    ["coffee","咖啡","饮具"],["tea","茶","饮具"],["milk","牛奶","饮具"],["coke","可乐","饮具"],["juice","果汁","饮具"],["drink","饮料","饮具"],["cup","杯子","饮具"],["bottle","瓶子","饮具"],["glass","玻璃杯","饮具"],["can","罐子","饮具"],["chopstick","筷子","饮具"],["bowl","碗","饮具"],["plate","盘子","饮具"],["knife","刀","饮具"],["fork","叉子","饮具"],
+    ["weekday","工作日","时空"],["weekend","周末","时空"],["some day","某天","时空"],["season","季节","时空"],["lunchtime","午餐时","时空"],["p.m.","下午","时空"],["life","生活","时空"],["country","国家","时空"],["place","地方","时空"],["market","市场","时空"],["palace","宫殿","时空"],["Children’s Palace","少年宫","时空"],["cinema","电影院","时空"],["England","英国","时空"],
+    ["sky","天空","自然"],["animal","动物","自然"],["weather","天气","自然"],["cloud","云","自然"],["cloudy","多云","自然"],["rain","雨","自然"],["rainy","下雨","自然"],["wet","湿的","自然"],["dry","干的","自然"],["sun","太阳","自然"],["sunny","晴朗","自然"],["warm","温暖","自然"],["cool","凉爽","自然"],["snow","雪","自然"],["snowy","雪天","自然"],["snowman","雪人","自然"],["temperature","温度","自然"],["degree","度","自然"],["wind","风","自然"],["windy","有风","自然"],
+    ["hobby","爱好","描述"],["model","模型","描述"],["collect","收集","描述"],["stamp","邮票","描述"],["drawing","画","描述"],["ability","能力","描述"],["coloured","彩色的","描述"],["different","不同","描述"],["fresh","新鲜","描述"],["healthy","健康","描述"],["hungry","饿的","描述"],["delicious","美味","描述"],["terrible","糟糕","描述"],["true","真实","描述"],["umbrella","雨伞","描述"],
+    ["talk","谈话","动作"],["speak","说","动作"],["say","说","动作"],["ask","问","动作"],["smell","闻","动作"],["taste","尝","动作"],["keep","保持","动作"],["count","数数","动作"],["find","找到","动作"],["look for","寻找","动作"],["wake up","醒来","动作"],["stay","停留","动作"],["wait","等待","动作"],["put on","穿上","动作"],["change","改变","动作"],["turn","转","动作"],["shine","照耀","动作"],["walk","走路","动作"],
+    ["said","说(过)","过去"],["went","去(过)","过去"],["had","有(过)","过去"],["thought","想(过)","过去"],
+    ["more than","多于","常用"],["plenty of","大量","常用"],["for example","例如","常用"],["a cup of","一杯","常用"],["a bottle of","一瓶","常用"],["seldom","极少","常用"],["often","经常","常用"],["usually","通常","常用"],["quite","相当","常用"],["maybe","可能","常用"],["together","一起","常用"],["have fun","娱乐","常用"],
+    ["than","比","其他"],["more","更多","其他"],["every","每","其他"],["during","期间","其他"],["Mrs","太太","其他"],["son","儿子","其他"],["everyone","所有人","其他"],["something","某物","其他"],["yours","你的","其他"],["example","例子","其他"],["report","报告","其他"],["both","两者都","其他"],["should","应该","其他"],["shouldn't","不应该","其他"],["hope","希望","其他"],["need","需要","其他"],["come on","来吧","其他"],["first","第一","其他"],["sweet","甜","其他"],["salty","咸","其他"],["sour","酸","其他"],["western","西方","其他"],["most","多数","其他"],["also","也","其他"],["again","再一次","其他"],["warm","温暖","其他"],["cool","凉爽","其他"],["cold","冷","其他"],["hot","热","其他"],["busy","忙","其他"],["far","远","其他"],["sure","确信","其他"],["dear","亲爱","其他"],["early","早","其他"],["quickly","迅速","其他"],["away","离开","其他"],["outside","外面","其他"],["hard","努力","其他"],["before","之前","其他"],["start","开始","其他"],["finish","完成","其他"],["talking","会说","其他"],["uh","唔","其他"]
+];
+
+let stats = JSON.parse(localStorage.getItem('5A_SP_V51')) || {lvl1:{}, lvl2:{}, lvl3:{}};
+let curLvl = 1, curCat = "", wordIdx = 0, currentWord = "", typed = "", lock = false;
+let sessionPool = [], maskList = [], errorCount = 0, hintUsed = false;
+
+function changeLvl(l, e) { if(e) e.stopPropagation(); curLvl = l; document.querySelectorAll('.lvl-btn').forEach(b => b.classList.toggle('active', b.id === 'btn-lvl-'+l)); showMenu(); }
+function focusInput() { if(!lock) document.getElementById('hidden-input').focus(); }
+function splitSyl(w) { return w.match(/[^aeiouy]*[aeiouy]+(?:[^aeiouy](?![aeiouy]))*/gi) || [w]; }
+
+function showMenu() {
+    document.getElementById('menu-screen').style.display='block'; document.getElementById('game-screen').style.display='none'; document.getElementById('modal').style.display='none';
+    const lk = 'lvl' + curLvl; lock = false;
+    for(let l=1; l<=3; l++) {
+        let mCount = dbWords.filter(i => stats['lvl'+l][i[0]]?.m).length;
+        document.getElementById('bar-'+l).style.width = (mCount / dbWords.length * 100) + '%';
+        document.getElementById('txt-'+l).innerText = mCount + ' / ' + dbWords.length;
+    }
+    const grid = document.getElementById('category-btns'); grid.innerHTML = '';
+    let mistakes = dbWords.filter(i => { let s = stats[lk][i[0]]; return s && !s.m && (s.e || []).length > 0; });
+    if(mistakes.length > 0) {
+        let btn = document.createElement('div'); btn.className = 'cat-btn'; btn.style.borderColor = 'var(--wrong)'; btn.style.background = '#fff5f5';
+        btn.innerHTML = `<span class="cat-name" style="color:var(--wrong)">📕 专属错题本</span><span class="cat-info">${mistakes.length}词待掌握</span><div class="badge">${mistakes.length}</div>`;
+        btn.onclick = (ev) => { ev.stopPropagation(); curCat = "错题"; initLevel(); }; grid.appendChild(btn);
+    }
+    [...new Set(dbWords.map(i => i[2]))].forEach(c => {
+        let list = dbWords.filter(i => i[2] === c);
+        let mCount = list.filter(i => stats[lk][i[0]]?.m).length;
+        let btn = document.createElement('div'); btn.className = 'cat-btn';
+        btn.innerHTML = `<span class="cat-name">${c}</span><span class="cat-info">${mCount}/${list.length}</span>`;
+        btn.onclick = (ev) => { ev.stopPropagation(); curCat = c; initLevel(); }; grid.appendChild(btn);
+    });
+}
+
+function initLevel() {
+    document.getElementById('modal').style.display='none'; document.getElementById('menu-screen').style.display='none'; document.getElementById('game-screen').style.display='flex';
+    const lk = 'lvl' + curLvl; lock = false;
+    let pool = [];
+    if(curCat === "错题") {
+        pool = dbWords.filter(i => stats[lk][i[0]] && !stats[lk][i[0]].m && stats[lk][i[0]].e.length > 0);
+    } else {
+        pool = dbWords.filter(i => i[2] === curCat && !stats[lk][i[0]]?.m && (!stats[lk][i[0]] || stats[lk][i[0]].e.length === 0));
+        if(pool.length === 0) pool = dbWords.filter(i => i[2] === curCat);
+    }
+    pool.sort(() => Math.random() - 0.5); sessionPool = pool.slice(0, 10); wordIdx = 0; startNext();
+}
+
+function startNext() {
+    if (wordIdx >= sessionPool.length) { finish(); return; }
+    currentWord = sessionPool[wordIdx][0].toLowerCase();
+    document.getElementById('hint-text').innerText = sessionPool[wordIdx][1];
+    typed = ""; errorCount = 0; hintUsed = false;
+    const lk = 'lvl' + curLvl; const s = stats[lk][currentWord];
+    const sHint = document.getElementById('streak-text');
+    if(curCat === "错题" && s) { sHint.style.display = 'block'; sHint.innerText = `🎯 该词累计拼对进度: ${s.s}/5`; } else { sHint.style.display = 'none'; }
+    maskList = new Array(currentWord.length).fill(true); const syls = splitSyl(currentWord);
+    if(curLvl === 1) {
+        if(syls.length > 1) { let hIdx = Math.floor(Math.random() * syls.length); let cIdx = 0; syls.forEach((s, idx) => { for(let c of s) { maskList[cIdx] = (idx === hIdx); cIdx++; } }); } 
+        else { for(let i=0; i<currentWord.length; i++) if(i === 0 || i === currentWord.length - 1) maskList[i] = false; }
+    } else if(curLvl === 2) {
+        if(syls.length > 1) { let sIdx = Math.floor(Math.random() * syls.length); let cIdx = 0; syls.forEach((s, idx) => { for(let c of s) { maskList[cIdx] = (idx !== sIdx); cIdx++; } }); } 
+        else { maskList[0] = false; }
+    }
+    autoCheck(); renderArea(); setTimeout(() => { speakNow(); focusInput(); }, 300);
+}
+
+function autoCheck() { while(typed.length < currentWord.length && !/[a-z]/.test(currentWord[typed.length])) { typed += currentWord[typed.length]; } }
+
+function renderArea() {
+    const area = document.getElementById('spell-area'); area.innerHTML = '';
+    for(let i=0; i < currentWord.length; i++) {
+        const char = currentWord[i]; if(char === " ") { area.innerHTML += '<span style="width:20px"></span>'; continue; }
+        let state = "", disp = "&nbsp;";
+        if (i < typed.length) { state = "ok"; disp = char; } 
+        else if (i === typed.length) { state = "active"; disp = (errorCount >= 3) ? char : "&nbsp;"; } 
+        else { if (!maskList[i]) { state = "pre"; disp = char; } else if (errorCount >= 3) { state = "h-show"; disp = char; } }
+        area.innerHTML += `<span class="letter ${state}">${disp}</span>`;
+    }
+}
+
+document.getElementById('hidden-input').oninput = (e) => {
+    if(lock) return;
+    let val = e.target.value.toLowerCase(); e.target.value = "";
+    if(val) {
+        let key = val[val.length-1];
+        if(key === currentWord[typed.length]){
+            typed += key; playSFX('ok'); autoCheck();
+            if(typed === currentWord){
+                const res = updateWordStat(currentWord, !hintUsed && errorCount === 0);
+                lock = true; 
+                if(res === "DONE") {
+                    document.getElementById('modal-title').innerText = "✨ 彻底掌握！";
+                    document.getElementById('report-html').innerHTML = `<b style="color:var(--correct)">"${currentWord}"</b> 已累计拼对 5 次！<br>成功移出错题本。`;
+                    document.getElementById('modal').style.display='block';
+                } else {
+                    if(curCat === "错题") { const s = stats['lvl'+curLvl][currentWord]; document.getElementById('streak-text').innerText = `🎯 累计拼对进度: ${s.s}/5`; }
+                    setTimeout(()=>{ lock=false; wordIdx++; startNext(); }, 600);
+                }
+            }
+        } else {
+            errorCount++; playSFX('err'); if(errorCount === 3) { hintUsed = true; playSFX('hint'); }
+            renderArea(); const letters = document.querySelectorAll('.letter');
+            if(letters[typed.length]) { letters[typed.length].classList.add('err'); setTimeout(()=> { if(letters[typed.length]) letters[typed.length].classList.remove('err'); }, 400); }
+        }
+        renderArea();
+    }
+};
+
+function updateWordStat(w, perfect){
+    let lk = 'lvl' + curLvl; let status = "CONTINUE";
+    if(!stats[lk][w]) stats[lk][w] = {m:false, s:0, e:[]};
+    if(perfect){ 
+        if((stats[lk][w].e || []).length === 0) { stats[lk][w].m = true; } 
+        else { stats[lk][w].s++; if(stats[lk][w].s >= 5) { stats[lk][w].m = true; status = "DONE"; } }
+    } else { 
+        stats[lk][w].m = false; stats[lk][w].s = 0; if(!stats[lk][w].e) stats[lk][w].e = []; stats[lk][w].e.push(Date.now()); 
+    }
+    localStorage.setItem('5A_SP_V51', JSON.stringify(stats)); return status;
+}
+
+function showPrintModal() {
+    const lk = 'lvl' + curLvl;
+    const allBad = dbWords.filter(i => { let s = stats[lk][i[0]]; return s && (s.e || []).length > 0; });
+    const content = document.getElementById('print-content'); content.innerHTML = "";
+    const pArea = document.getElementById('print-area'); pArea.innerHTML = `<h2>5A英语 [${curLvl==1?'初级':curLvl==2?'中级':'高级'}] 强化复习清单</h2>`;
+    if(allBad.length === 0) { content.innerHTML = "当前难度暂无记录。"; }
+    else {
+        [...new Set(allBad.map(i => i[2]))].forEach(catName => {
+            content.innerHTML += `<h4 style="margin:10px 0 5px; color:var(--primary)">${catName}</h4>`;
+            pArea.innerHTML += `<h3 style="border-bottom:2px solid #000">${catName}</h3>`;
+            allBad.filter(i => i[2] === catName).forEach(m => {
+                let s = stats[lk][m[0]];
+                let row = `<div class="print-row"><span><b>${m[0]}</b> [${m[1]}]</span><span>历史错${s.e.length}次 / 累计对${s.s} ${s.m?'(已通过)':'(未掌握)'}</span></div>`;
+                content.innerHTML += row; pArea.innerHTML += row;
+            });
+        });
+    }
+    document.getElementById('print-modal').style.display='block';
+}
+function closePrint() { document.getElementById('print-modal').style.display='none'; }
+function speakNow(e) { if(e) e.stopPropagation(); window.speechSynthesis.cancel(); let m=new SpeechSynthesisUtterance(currentWord); m.lang='en-US'; m.rate=0.7; window.speechSynthesis.speak(m); focusInput(); }
+window.onkeydown = (e) => { if(e.key==='Backspace' && !lock){ typed = typed.slice(0,-1); while(typed.length>0 && !/[a-z]/.test(currentWord[typed.length-1])) typed = typed.slice(0,-1); renderArea(); } };
+function finish() { document.getElementById('modal-title').innerText = "🎊 轮次完成！"; document.getElementById('report-html').innerHTML = "本组练习完毕。所有进度已实时同步！<br><span style='font-size:0.8rem;'>Copyright © luka</span>"; document.getElementById('modal').style.display='block'; }
+showMenu();
+</script>
+</body>
+</html>
